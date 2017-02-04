@@ -5,20 +5,31 @@ package com.weibo.datasys.rest.data
   */
 trait User {
   def id: Long
+
   def name: String
+
   def groupId: Long
+
   def isValid: Boolean
 }
 
 
-
 case class WebUser(
-                  id: Long,
-                  name: String,
-                  groupId: Long
+                    user_id: String,
+                    name: String,
+                    auth: String,
+                    group_id: String
                   )
   extends User {
+  val VALID_CODE = 0
+
   override def isValid: Boolean = {
-    true
+    authFlag >= VALID_CODE
   }
+
+  def authFlag: Int = auth.toInt
+
+  def id = user_id.toLong
+
+  def groupId = group_id.toLong
 }
