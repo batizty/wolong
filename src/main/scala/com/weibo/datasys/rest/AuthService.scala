@@ -4,6 +4,10 @@ import akka.actor.Props
 import akka.pattern.ask
 import akka.util.Timeout
 import com.weibo.datasys.{Path => AuthServicePath, SecondPath => AuthServiceSecondPath}
+import org.json4s._
+import org.json4s.native.JsonMethods._
+import org.json4s.native.Serialization
+import org.slf4j.LoggerFactory
 import spray.routing.HttpService
 
 import scala.concurrent.duration._
@@ -37,7 +41,9 @@ trait AuthService
         } ~
         path(AuthServiceSecondPath.AUTHORIZED_CHECK) {
           get {
-            sendToWorker(CheckUserValid("tuoyu"))
+            parameters("user_name", "user_group".?, "password".?, "token".?) {
+              (un, ugO, pO, tO) => sendToWorker(CheckUserValid(un, ugO, pO, tO))
+            }
           }
         }
 
@@ -46,9 +52,12 @@ trait AuthService
 
   def sendToWorker[T](msg: AuthMessage) = {
     complete {
-      (authWorker ? msg)
-        .mapTo[AuthOK]
-        .map { ok => ok.result }
+      (authWorker ? msg) map { returnMsg =>
+        returnMsg match {
+          case m: ValidConfFile => m.message
+          case m: AuthResult => m.toString
+        }
+      }
     }
   }
 }
@@ -59,10 +68,21 @@ case class GetValidHadoopXML() extends AuthMessage
 
 case class GetValidShell() extends AuthMessage
 
+case class ValidConfFile(message: String) extends AuthMessage
+
 case class CheckUserValid(
                            name: String,
                            group: Option[String] = None,
                            password: Option[String] = None,
                            token: Option[String] = None) extends AuthMessage
 
-case class AuthOK(result: String) extends AuthMessage
+case class AuthResult(message: String = "", code: Int = 0) extends AuthMessage {
+  implicit val format = Serialization.formats(NoTypeHints)
+
+  override def toString = {
+    Serialization.writePretty(this)
+  }
+
+  def isAuthorizedUser: Boolean = code == 0
+}
+

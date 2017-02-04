@@ -15,10 +15,8 @@ case class DBUser(
                    state: String,
                    name: String
                  ) extends User {
-  override def isValid: Boolean = {
-    // TODO
-    true
-  }
+  val ACTIVED_FLAG = "actived"
+  override def isValid: Boolean = state == ACTIVED_FLAG
 }
 
 /**

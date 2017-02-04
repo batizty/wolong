@@ -5,7 +5,7 @@ import java.io.InputStream
 import com.weibo.datasys.rest.data.{Group, User}
 import org.slf4j.LoggerFactory
 
-import scala.xml.{Text, Elem, Node, XML}
+import scala.xml._
 
 
 /**
@@ -61,7 +61,8 @@ object HadoopPolicySettor {
           { nvmap2 map { x => updateXMLFile( x ) } }
         </configuration>
 
-      Some(prefix + xml2.toString)
+      val p = new PrettyPrinter(80,4)
+      Some(prefix + p.format(xml2))
     } catch {
       case e: Throwable =>
         log.error(s"Read $fname failed, So the Right hadoop-policy.xml could not be generated")

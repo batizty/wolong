@@ -39,7 +39,7 @@ class AuthWorker
   def receive = {
     case m: GetValidHadoopXML => getHadoopXML(sender)
     case m: GetValidShell => getValidShell(sender)
-    case m: CheckUserValid => sender ! AuthOK(checkUserValid())
+    case m: CheckUserValid => checkUserValid(sender, m)
     case m => log.error("Not Recognize Message $m")
   }
 
@@ -48,7 +48,7 @@ class AuthWorker
       case (us, gs) =>
         import util.HadoopPolicySettor
         HadoopPolicySettor.getValidHadoopPolicyXML(us, gs) foreach { xml =>
-          s ! AuthOK(xml)
+          s ! ValidConfFile(xml)
         }
     }
   }
@@ -58,8 +58,21 @@ class AuthWorker
       case (us, gs) =>
         import util.HadoopShellSettor
         HadoopShellSettor.getValidHadoopShell(us, gs) foreach { sh =>
-          s ! AuthOK(sh)
+          s ! ValidConfFile(sh)
         }
+    }
+  }
+
+  def checkUserValid(s: ActorRef, msg: CheckUserValid): Unit = {
+    userDao.getUserByName(msg.name) foreach { userOption =>
+      val result = userOption match {
+        case Some(user) if user.isValid => AuthResult()
+        case _ => AuthResult(
+          message = s"user ${msg.name} without this cluster privilege, Please contact to chenzhao1@staff.weibo.com to get information",
+          code = 1
+        )
+      }
+      s ! result
     }
   }
 
