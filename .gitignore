@@ -1,3 +1,5 @@
-project/target/*
 *.iml
-target/*
+.idea/
+project/
+src/test/
+target/
