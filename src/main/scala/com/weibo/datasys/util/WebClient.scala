@@ -1,10 +1,8 @@
-package com.weibo.datasys.rest.util
-
+package com.weibo.datasys.util
 
 import akka.actor.ActorSystem
 import akka.util.Timeout
 import com.weibo.datasys.rest.Configuration
-import com.weibo.datasys.rest.data.WebGroup
 import org.slf4j.LoggerFactory
 import spray.client.pipelining._
 import spray.http.HttpResponse
@@ -27,21 +25,21 @@ object WebClient extends Configuration {
   implicit val timeout = web_timeout seconds
   implicit val receiveTimeout: Timeout = web_timeout seconds
 
-  def main(args: Array[String]): Unit = {
-    import org.json4s._
-    import org.json4s.native.JsonMethods.parse
-    implicit val formats = DefaultFormats
-    case class XX(code: Int, data: List[WebGroup])
-
-    accessURL[String]("http://mlplat.intra.weibo.com/math/getGroup") foreach { str =>
-      println(s"url result = $str")
-      str foreach { ss =>
-        val x = parse(ss).extract[XX]
-        println(s"ss = $ss x = $x")
-      }
-
-    }
-  }
+  //  def main(args: Array[String]): Unit = {
+  //    import org.json4s._
+  //    import org.json4s.native.JsonMethods.parse
+  //    implicit val formats = DefaultFormats
+  //    case class XX(code: Int, data: List[WebGroup])
+  //
+  //    accessURL[String]("http://mlplat.intra.weibo.com/math/getGroup") foreach { str =>
+  //      println(s"url result = $str")
+  //      str foreach { ss =>
+  //        val x = parse(ss).extract[XX]
+  //        println(s"ss = $ss x = $x")
+  //      }
+  //
+  //    }
+  //  }
 
   def accessURL[T: FromResponseUnmarshaller : Manifest](url: String): Future[Option[T]] = {
     val pipeline = sendReceive ~> unmarshal[T]

@@ -60,7 +60,7 @@ class WebUserDao
   }
 
   override def getAllUser(): Future[List[User]] = {
-    import com.weibo.datasys.rest.util.WebClient
+    import com.weibo.datasys.util.WebClient
     WebClient.accessURL[String](web_user_url) map { ssOption =>
       ssOption map { ss =>
         try {

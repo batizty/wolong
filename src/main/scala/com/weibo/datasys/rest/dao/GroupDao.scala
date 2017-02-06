@@ -60,7 +60,7 @@ class WebGroupDao
   }
 
   override def getAllGroup(): Future[List[Group]] = {
-    import com.weibo.datasys.rest.util.WebClient
+    import com.weibo.datasys.util.WebClient
     WebClient.accessURL[String](web_group_url) map { ssOption =>
       ssOption map { ss =>
         try {

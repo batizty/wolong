@@ -1,10 +1,9 @@
 package com.weibo.datasys.rest
 
-import akka.actor.{ActorRef, Actor, ActorLogging}
-
+import akka.actor.ActorRef
+import com.weibo.datasys.BaseActor
 import com.weibo.datasys.rest.dao._
-import com.weibo.datasys.rest.data.{User, Group}
-import com.weibo.datasys.rest.util.HadoopPolicySettor
+import com.weibo.datasys.rest.data.{Group, User}
 
 import scala.concurrent.Future
 
@@ -12,22 +11,11 @@ import scala.concurrent.Future
   * Created by tuoyu on 03/02/2017.
   */
 
-trait AuthOperations {
-  def checkUserValid(): String = "x"
-}
-
-
 class AuthWorker
-  extends Actor
-    with AuthOperations
-    with ActorLogging
+  extends BaseActor
     with Configuration {
 
   import scala.concurrent.ExecutionContext.Implicits.global
-
-  override def preStart() = {
-    log.info("AuthWorker Start")
-  }
 
   private val (userDao: UserDao, groupDao: GroupDao) =
     if (source == Configuration.DATA_SOURCE_DB)
@@ -63,19 +51,6 @@ class AuthWorker
     }
   }
 
-  def checkUserValid(s: ActorRef, msg: CheckUserValid): Unit = {
-    userDao.getUserByName(msg.name) foreach { userOption =>
-      val result = userOption match {
-        case Some(user) if user.isValid => AuthResult()
-        case _ => AuthResult(
-          message = s"user ${msg.name} without this cluster privilege, Please contact to chenzhao1@staff.weibo.com to get information",
-          code = 1
-        )
-      }
-      s ! result
-    }
-  }
-
   def check(
              userFlag: Boolean = false,
              groupFlag: Boolean = false
@@ -98,6 +73,19 @@ class AuthWorker
       if (false == ((userFlag && us.isEmpty) || (groupFlag && gs.isEmpty))) {
         f(us, gs)
       }
+    }
+  }
+
+  def checkUserValid(s: ActorRef, msg: CheckUserValid): Unit = {
+    userDao.getUserByName(msg.name) foreach { userOption =>
+      val result = userOption match {
+        case Some(user) if user.isValid => AuthResult()
+        case _ => AuthResult(
+          message = s"user ${msg.name} without this cluster privilege, Please contact to chenzhao1@staff.weibo.com to get information",
+          code = 1
+        )
+      }
+      s ! result
     }
   }
 }

@@ -12,11 +12,18 @@ object Main
   extends Configuration {
 
   def main(args: Array[String]): Unit = {
-
     implicit val system = ActorSystem(s"wolong-rest-service")
 
-    val restService = system.actorOf(Props[RestServiceActor], "rest-service")
+    startJobSchedulerService()
+    //    startRestService()
 
-    IO(Http) ! Http.Bind(restService, host, port)
+    def startRestService() = {
+      val restService = system.actorOf(Props[RestServiceActor], "rest-service")
+      IO(Http) ! Http.Bind(restService, host, port)
+    }
+
+    def startJobSchedulerService() = {
+      val jobSchedulerService = system.actorOf(Props[JobSchedulerActor], "scheduler-service")
+    }
   }
 }

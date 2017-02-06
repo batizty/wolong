@@ -1,6 +1,5 @@
 package com.weibo.datasys
 
-import akka.actor.{Actor, ActorLogging}
 import com.weibo.datasys.rest.AuthService
 
 
@@ -9,9 +8,8 @@ import com.weibo.datasys.rest.AuthService
   */
 
 class RestServiceActor
-  extends Actor
-    with AuthService
-    with ActorLogging {
+  extends BaseActor
+    with AuthService {
 
   def actorRefFactory = context
 
