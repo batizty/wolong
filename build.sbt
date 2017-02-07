@@ -56,5 +56,8 @@ libraryDependencies ++= Seq(
   , "mysql" % "mysql-connector-java" % "5.1.39"
 )
 
+/** just for testing **/
+libraryDependencies += "com.nokia" %% "mesos-scala-api" % "0.4.0"
+
 resolvers += Resolver.url("sbt-plugin-releases-scalasbt", url("http://repo.scala-sbt.org/scalasbt/sbt-plugin-releases/"))
 

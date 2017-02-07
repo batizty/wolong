@@ -6,6 +6,20 @@ import org.joda.time.format.DateTimeFormat
 /**
   * Created by tuoyu on 06/02/2017.
   */
+
+object SparkJob {
+  implicit def statusToJobStatus(s: String): JobStatus.Value = {
+    s match {
+      case "0" => JobStatus.SUSPENDING
+      case "1" => JobStatus.FINISHED
+      case _ => JobStatus.NOT_SUPPORT
+    }
+  }
+
+  implicit def JobStatusToStatus(jobStatus: JobStatus.Value): String = {
+    jobStatus.id.toString
+  }
+}
 case class SparkJob(
                      task_id: String,
                      name: String,
@@ -45,4 +59,6 @@ case class SparkJob(
   def jar: String = path
 
   def jobName: String = name
+
+
 }

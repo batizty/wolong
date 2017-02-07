@@ -32,6 +32,10 @@ trait Configuration {
   lazy val web_group_url = web_url_prefix + "/" + Try(config.getString("web.group_url")).getOrElse("getGroup")
   lazy val web_task_url = web_url_prefix + "/" + Try(config.getString("web.task_url")).getOrElse("getTask")
   lazy val web_timeout = Try(config.getInt("web.timeout")).getOrElse(5)
+  // mesos 配置
+  lazy val mesos_url = Try(config.getString("mesos.master")).getOrElse("10.77.136.42:5050")
+  lazy val mesos_default_user = Try(config.getString("mesos.default_user")).getOrElse("hadoop")
+  lazy val mesos_framework_name = Try(config.getString("mesos.framework.name")).getOrElse("weibo.wolong")
   // 读取RestService配置
   val config = ConfigFactory.load()
 }
