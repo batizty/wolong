@@ -78,7 +78,7 @@ case class SparkJob(
   def jobName: String = name
 
   def toCmd(): String = {
-    """spark-submit --class org.apache.spark.examples.SparkPi --executor-memory 1G --num-executors  2 /usr/local/spark/examples/jars/spark-examples_2.11-2.0.2.jar 100"""
+    """/usr/local/spark/bin/spark-submit --class org.apache.spark.examples.SparkPi --executor-memory 1G --num-executors  2 /usr/local/spark/examples/jars/spark-examples_2.11-2.0.2.jar 100"""
   }
 
   def summary: String = {
