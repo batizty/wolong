@@ -51,6 +51,7 @@ class SparkJobHandler
     scheduler.scheduleOnce(refresh_time_interval, self, GetAvailableJob(Some(JobType.SPARK)))
     msgOption foreach { msg =>
       getFirstSatisfyJob(msg.data, "TODO") foreach { job =>
+        // TODO 修改这里的状态，直接和Task对接
         import com.weibo.datasys.job.mesos.MesosSimpleHandler
         MesosSimpleHandler.run(job.toTask(), None) { taskId =>
           scriberActor ! ChangeJobStatus(job.jobId, Some(taskId), JobStatus.RUNNING)
