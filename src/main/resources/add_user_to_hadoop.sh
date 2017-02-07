@@ -31,6 +31,13 @@ function init() {
         printError "init $target_file ownership for user $user_name:$group_name"
         return $ret
     fi
+
+    target_file="/data0/$user_name"
+    printInfo "init $target_file for user $user_name"
+    if [ ! -d $target_file ]; then
+        runCommands "sudo mkdir $target_file"
+        runCommands "sudo chown -R $user_name:$group_name $target_file"
+    fi
     return 0
 }
 
@@ -103,8 +110,4 @@ for ((i = 0; i < ${#user_array[@]}; i++)); do
     else
         printError "user $user_name is already in system"
     fi
-
-
-    #### mkdir /data0/$user_name
-    # TODO
 done
