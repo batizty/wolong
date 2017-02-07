@@ -2,7 +2,7 @@ package com.weibo.datasys.job
 
 import akka.actor.Props
 import com.weibo.datasys.BaseActor
-import com.weibo.datasys.job.data.{Job, JobType, SparkJob}
+import com.weibo.datasys.job.data.{Job, JobStatus, JobType, SparkJob}
 import org.joda.time.DateTime
 
 import scala.concurrent.duration._
@@ -40,12 +40,29 @@ class SparkJobHandler
     getAvailableJobList(None)
   }
 
+  def receive = {
+    case m: GetAvailableJob => scriberActor ! m
+    case m: AvailableJobList => getAvailableJobList(Some(m))
+    case _ => ()
+  }
+
   def getAvailableJobList(msgOption: Option[AvailableJobList] = None): Unit = {
     log.info(s"GetAvailableJobList ${DateTime.now} and set scheduler agian")
     scheduler.scheduleOnce(refresh_time_interval, self, GetAvailableJob(Some(JobType.SPARK)))
     msgOption foreach { msg =>
       getFirstSatisfyJob(msg.data, "TODO") foreach { job =>
-        //        start
+        import com.weibo.datasys.job.mesos.MesosSimpleHandler
+        MesosSimpleHandler.run(job.toTask(), Some(job.user)) { taskId =>
+          scriberActor ! ChangeJobStatus(job.jobId, Some(taskId), JobStatus.RUNNING)
+        } {
+          scriberActor ! ChangeJobStatus(job.jobId, None, JobStatus.FINISHED)
+          ()
+        } {
+          scriberActor ! ChangeJobStatus(job.jobId, None, JobStatus.KILLED)
+          ()
+        } foreach { xx =>
+          log.info(s"Job ${job} finished")
+        }
       }
     }
     ()
@@ -59,12 +76,7 @@ class SparkJobHandler
     * @return
     */
   def getFirstSatisfyJob(jobList: List[Job], resources: String): Option[SparkJob] = {
-    None
-  }
-
-  def receive = {
-    case m: GetAvailableJob => scriberActor ! m
-    case _ => ()
+    jobList.headOption.map(_.asInstanceOf[SparkJob])
   }
 
 

@@ -24,7 +24,7 @@ object JobScriber {
 
   case class GetAvailableJob(typ: Option[JobType.Value] = None)
 
-  case class ChangeJobStatus(id: String, status: JobStatus.Value)
+  case class ChangeJobStatus(id: String, taskId: Option[String] = None, status: JobStatus.Value)
 
   case class AvailableJobList(data: List[Job])
 
