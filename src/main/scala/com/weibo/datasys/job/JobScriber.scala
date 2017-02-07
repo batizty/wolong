@@ -109,9 +109,9 @@ class JobScriber
 
     log.info(s"RefreshJobList ${DateTime.now} and setting scheduler again")
     scheduler.scheduleOnce(refresh_time_interval, self, RefreshJobList())
-    log.debug(s"Now JobList = ${jobMap}")
+    log.debug(s"Before refreshJobList JobList = ${showJobMap}")
     WebClient.accessURL[String](web_task_url) map { ssOption =>
-      log.info(s"ssOption = $ssOption")
+      log.debug(s"ssOption = $ssOption")
       ssOption map { ss =>
         try {
           parse(ss).extract[XX].data
@@ -128,9 +128,17 @@ class JobScriber
       case Failure(err) =>
         log.error("")
     }
+    log.debug(s"After refreshJobList JobList = ${showJobMap}")
   }
 
   def updateJobMap(taskList: List[SparkJob]): Unit = synchronized {
     jobMap = (jobMap ++ taskList.map { task => (task.jobId, task) }.toMap)
+  }
+
+  def showJobMap: String = {
+    val ss = for { (id, task) <- jobMap } yield {
+      s"$id -> ${task.summary}"
+    }
+    ss.mkString("\n")
   }
 }

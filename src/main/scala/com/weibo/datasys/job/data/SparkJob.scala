@@ -81,4 +81,8 @@ case class SparkJob(
     """spark-submit --class org.apache.spark.examples.SparkPi --executor-memory 1G --num-executors  2 /usr/local/spark/examples/jars/spark-examples_2.11-2.0.2.jar 100"""
   }
 
+  def summary: String = {
+    s"name: $jobName status: $jobStatus user: $jobUser submit_time: $jobSubmitTime"
+  }
+
 }

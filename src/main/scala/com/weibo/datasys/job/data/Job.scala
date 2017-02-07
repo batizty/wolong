@@ -17,6 +17,8 @@ trait Job {
   def jobStatus: JobStatus.Value
 
   def jobId: String
+
+  def summary: String
 }
 
 object JobType extends Enumeration {

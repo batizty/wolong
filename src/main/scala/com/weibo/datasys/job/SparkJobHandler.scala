@@ -33,7 +33,7 @@ class SparkJobHandler
   val scheduler = context.system.scheduler
   val refresh_time_interval = 5 minutes
 
-  val scriberActor = context.actorSelection(JobScriber.Name)
+  val scriberActor = context.actorSelection("../" + JobScriber.Name)
 
   override def preStart = {
     super.preStart()
@@ -47,12 +47,12 @@ class SparkJobHandler
   }
 
   def getAvailableJobList(msgOption: Option[AvailableJobList] = None): Unit = {
-    log.info(s"GetAvailableJobList ${DateTime.now} and set scheduler agian")
+    log.info(s"GetAvailableJobList ${DateTime.now} and set scheduler again")
     scheduler.scheduleOnce(refresh_time_interval, self, GetAvailableJob(Some(JobType.SPARK)))
     msgOption foreach { msg =>
       getFirstSatisfyJob(msg.data, "TODO") foreach { job =>
         import com.weibo.datasys.job.mesos.MesosSimpleHandler
-        MesosSimpleHandler.run(job.toTask(), Some(job.user)) { taskId =>
+        MesosSimpleHandler.run(job.toTask(), None) { taskId =>
           scriberActor ! ChangeJobStatus(job.jobId, Some(taskId), JobStatus.RUNNING)
         } {
           scriberActor ! ChangeJobStatus(job.jobId, None, JobStatus.FINISHED)
