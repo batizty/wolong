@@ -32,7 +32,9 @@ case class SparkJob(
                      add_time: String,
                      status: String,
                      path: String,
-                     user: String) extends Job {
+                     user: String,
+                     mesos_task_id: String = ""
+                   ) extends Job {
 
   /* time format 2017-01-14 22:05:03 */
   val datetime_fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")
@@ -59,6 +61,7 @@ case class SparkJob(
   def jar: String = path
 
   def toTask(): TaskDescriptor = {
+    // TODO  这里会有详细的配置生成
     import org.apache.mesos.mesos.{CommandInfo, Resource, Value}
     TaskDescriptor(
       jobId + "_" + jobName,

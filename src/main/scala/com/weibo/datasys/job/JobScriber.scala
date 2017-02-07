@@ -71,6 +71,12 @@ class JobScriber
   def returnAvailableJob(s: ActorRef, msg: GetAvailableJob): Unit = {
     val jobs: List[Job] = jobMap.filter {
       case (id, task) =>
+        task.jobStatus != JobStatus.FINISHED &&
+          task.jobStatus != JobStatus.FAILED &&
+          task.jobStatus != JobStatus.NOT_SUPPORT &&
+          task.jobStatus != JobStatus.RUNNING
+    }.filter {
+      case (id, task) =>
         if (msg.typ.isDefined) msg.typ.exists(_ == task.jobType)
         else true
     }.map(_._2)
@@ -81,7 +87,7 @@ class JobScriber
     ()
   }
 
-  def changeJobStatus(msg: ChangeJobStatus): Unit = {
+  def changeJobStatus(msg: ChangeJobStatus): Unit = synchronized {
     jobMap.get(msg.id) match {
       case Some(task) =>
         import SparkJob._
@@ -91,10 +97,7 @@ class JobScriber
         }
         if (task.jobStatus != msg.status) {
           log.info(s"Change Job ${msg.id} Status From ${task.jobStatus} To ${msg.status}")
-          msg.status match {
-            case JobStatus.SUSPENDING | JobStatus.KILLED => jobMap = jobMap - msg.id
-            case _ => jobMap = jobMap.updated(msg.id, newTask)
-          }
+          jobMap = jobMap.updated(msg.id, newTask)
         }
       case None =>
         log.error(s"Could not find Job with id ${msg.id}")
@@ -106,6 +109,7 @@ class JobScriber
 
     log.info(s"RefreshJobList ${DateTime.now} and setting scheduler again")
     scheduler.scheduleOnce(refresh_time_interval, self, RefreshJobList())
+    log.debug(s"Now JobList = ${jobMap}")
     WebClient.accessURL[String](web_task_url) map { ssOption =>
       log.info(s"ssOption = $ssOption")
       ssOption map { ss =>
@@ -127,9 +131,6 @@ class JobScriber
   }
 
   def updateJobMap(taskList: List[SparkJob]): Unit = synchronized {
-    jobMap = (jobMap ++ taskList.map { task => (task.jobId, task) }.toMap).filter {
-      case (id, task) =>
-        task.jobStatus == JobStatus.SUSPENDING || task.jobStatus == JobStatus.KILLED
-    }
+    jobMap = (jobMap ++ taskList.map { task => (task.jobId, task) }.toMap)
   }
 }
