@@ -18,7 +18,6 @@ import org.json4s.DefaultFormats
 import org.json4s.native.JsonMethods._
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Promise
 import scala.concurrent.duration._
 import scala.util.{Failure, Success}
 
@@ -173,17 +172,21 @@ class JobManager
         task <- lauched.info
       } {
         log.info(s"Submit Job $job")
-        lauched.events.subscribe(_ match {
-          case te: TaskEvent =>
-            log.info(s" Task Event = $te")
-            val jobStatus: JobStatus.Value = te.state
-            cj = cj.copy(status = jobStatus.id.toString,
-              task_id = te.taskId.toString()
-            )
-            self ! AddJobs(List(cj))
-          case m =>
-            log.debug(s"problem error m = $m")
-        })
+        val taskId = task.taskId.toString
+        cj = cj.copy(task_id = taskId, status = JobStatus.TaskRunning.id.toString)
+        self ! ChangeJobStatus(cj)
+        lauched.events.subscribe(x =>
+          x match {
+            case te: TaskEvent =>
+              log.info(s" Task Event = $te")
+              val jobStatus: JobStatus.Value = te.state
+              cj = cj.copy(status = jobStatus.id.toString,
+                task_id = te.taskId.toString()
+              )
+              self ! ChangeJobStatus(cj)
+            case m =>
+              log.debug(s"problem error m = $m")
+          })
       }
     }
     //      launched = fw.submitTask(task)
@@ -262,10 +265,11 @@ class JobManager
     // TODO report to FrontEnd Web
     if (job.isFinishedOrFailure) {
       self ! DeleteJob(job.jobId)
-      self ! DeleteJobActor(job.jobId)
+      //      self ! DeleteJobActor(job.jobId)
     } else {
-      self ! AddJobs(List(job))
+      _jobMap.updated(job.jobId, job)
     }
   }
+
 
 }
