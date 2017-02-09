@@ -63,28 +63,28 @@ class SparkJobHandler
     case _ => ()
   }
 
-  def updateActors(m: UpdateTaskStatus): Unit = synchronized {
-    import JobStatus._
-    val job = m.job.asInstanceOf[SparkJob]
-    log.info(s"Update Job ${job.jobId} Status to ${job.jobStatus}")
-    job.jobStatus match {
-      case TaskFinished |
-           TaskFailed |
-           TaskKilled |
-           TaskLost |
-           TaskError =>
-        jobActors.get(job.jobId) foreach { actor =>
-          log.info(s"Job ${job.jobId} Running Task Over, So kill Monitor Actor")
-          actor ! PoisonPill
-          deleteJobActor(job)
-        }
-      case _ =>
-        if (jobActors.get(job.jobId).isEmpty) {
-          val jobActor = context.actorOf(MesosJobHandler.props(job), MesosJobHandler.getName(jobId = job.jobId))
-          addJobActor(job, jobActor)
-        }
-    }
-  }
+//  def updateActors(m: UpdateTaskStatus): Unit = synchronized {
+//    import JobStatus._
+//    val job = m.job.asInstanceOf[SparkJob]
+//    log.info(s"Update Job ${job.jobId} Status to ${job.jobStatus}")
+//    job.jobStatus match {
+//      case TaskFinished |
+//           TaskFailed |
+//           TaskKilled |
+//           TaskLost |
+//           TaskError =>
+//        jobActors.get(job.jobId) foreach { actor =>
+//          log.info(s"Job ${job.jobId} Running Task Over, So kill Monitor Actor")
+//          actor ! PoisonPill
+//          deleteJobActor(job)
+//        }
+//      case _ =>
+//        if (jobActors.get(job.jobId).isEmpty) {
+//          val jobActor = context.actorOf(MesosJobHandler.props(job), MesosJobHandler.getName(jobId = job.jobId))
+//          addJobActor(job, jobActor)
+//        }
+//    }
+//  }
 
   private def addJobActor(job: Job, actor: ActorRef): Unit = synchronized {
     jobActors += (job.jobId -> actor)

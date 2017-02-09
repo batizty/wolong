@@ -2,6 +2,7 @@ package com.weibo.datasys.job.mesos
 
 import akka.actor.{ActorRef, Props}
 import com.weibo.datasys.BaseActor
+import com.weibo.datasys.job.JobManager.ChangeJobStatus
 import com.weibo.datasys.job.data.{Job, JobStatus, SparkJob}
 import org.joda.time.DateTime
 
@@ -27,7 +28,7 @@ object MesosJobHandler {
   case class KillTask()
 
   // 更新作业状态
-  case class UpdateTaskStatus(job: Job)
+//  case class UpdateTaskStatus(job: Job)
 
   case class ActorInitOk()
 
@@ -61,7 +62,7 @@ class MesosJobHandler(job: Job)
         status = jobStatus.id.toString,
         task_id = status.taskId.toString()
       )
-      parent ! UpdateTaskStatus(currentJob)
+      parent ! ChangeJobStatus(currentJob)
     } foreach { unit =>
       log.info(s"Job ${job} finished")
     }

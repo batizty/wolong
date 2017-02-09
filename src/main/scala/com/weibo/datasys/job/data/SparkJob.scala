@@ -67,7 +67,7 @@ case class SparkJob(
   def jobId = task_id
 
   def toCmd(): String = {
-    """/usr/local/spark/bin/spark-submit --class org.apache.spark.examples.SparkPi --executor-memory 1G --num-executors  2 /usr/local/spark/examples/jars/spark-examples_2.11-2.0.2.jar 100"""
+    """/usr/local/spark/bin/spark-submit --class org.apache.spark.examples.SparkPi --executor-memory 10G --num-executors 4 /usr/local/spark/examples/jars/spark-examples_2.11-2.0.2.jar 10000"""
   }
 
   def summary: String = {
