@@ -127,7 +127,7 @@ class JobManager
     log.info(s"RefreshJobList ${DateTime.now} and setting scheduler again")
 
     // send self to refreshJobList $refresh_time_interval min later
-    scheduler.scheduleOnce(refresh_time_interval, self, RefreshJobList())
+//    scheduler.scheduleOnce(refresh_time_interval, self, RefreshJobList())
 
     log.debug(s"Before refreshJobList JobList = ${showJobMap}")
 
@@ -173,7 +173,7 @@ class JobManager
       } {
         log.info(s"Submit Job $job")
         val taskId = task.taskId.toString
-        cj = cj.copy(task_id = taskId, status = JobStatus.TaskRunning.id.toString)
+        cj = cj.copy(mesos_task_id = taskId, status = JobStatus.TaskRunning.id.toString)
         self ! ChangeJobStatus(cj)
         lauched.events.subscribe(x =>
           x match {
@@ -181,7 +181,7 @@ class JobManager
               log.info(s" Task Event = $te")
               val jobStatus: JobStatus.Value = te.state
               cj = cj.copy(status = jobStatus.id.toString,
-                task_id = te.taskId.toString()
+                mesos_task_id = te.taskId.toString()
               )
               self ! ChangeJobStatus(cj)
             case m =>
