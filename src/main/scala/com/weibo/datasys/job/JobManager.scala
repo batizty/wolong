@@ -1,16 +1,11 @@
 package com.weibo.datasys.job
 
-import akka.actor.{ActorRef, PoisonPill, Props}
-import akka.pattern.ask
+import akka.actor.Props
 import akka.util.Timeout
-import com.nokia.mesos.api.async.MesosException
 import com.nokia.mesos.api.stream.MesosEvents.TaskEvent
-import com.nokia.mesos.{FrameworkFactory, DriverFactory}
+import com.nokia.mesos.{DriverFactory, FrameworkFactory}
 import com.weibo.datasys.BaseActor
-import com.weibo.datasys.job.data.{JobStatus, Job, SparkJob}
-import com.weibo.datasys.job.mesos.MesosJobHandler
-import com.weibo.datasys.job.mesos.MesosJobHandler.{ActorInitOk, StartTask}
-import com.weibo.datasys.job.mesos.MesosSimpleHandler._
+import com.weibo.datasys.job.data.{Job, JobStatus, SparkJob}
 import com.weibo.datasys.rest.Configuration
 import org.apache.mesos.mesos.FrameworkInfo
 import org.joda.time.DateTime
@@ -45,10 +40,6 @@ object JobManager {
 
   private[JobManager] case class DeleteJob(id: String)
 
-  private[JobManager] case class AddJobActor(id: String, actor: ActorRef)
-
-  private[JobManager] case class DeleteJobActor(id: String)
-
   private case class XX(code: Int, data: List[SparkJob])
 
 }
@@ -65,30 +56,33 @@ class JobManager
   // all implicit value
   implicit val formats = DefaultFormats
   implicit val timeout: Timeout = 10 seconds
+
   // TODO 后续这些机制可能会有变化
-  // 现在
   val scheduler = context.system.scheduler
-  val refresh_time_interval = 30 seconds
-  val avaliable_job_list_sz: Int = 5
+  val refresh_time_interval = 600 seconds
+
   // private Value for Scheduler
   private var _jobMap: Map[String, Job] = Map.empty
-  private var _jobActors: Map[String, ActorRef] = Map.empty
 
-  val fw_info = FrameworkInfo(
+  val _mesos_framework_info = FrameworkInfo(
     name = mesos_framework_name,
     user = mesos_default_user)
 
-  val mk_dirver = DriverFactory.createDriver(fw_info, mesos_url)
-  val fw = FrameworkFactory.createFramework(mk_dirver)
+  val _mesos_driver = DriverFactory.createDriver(_mesos_framework_info, mesos_url)
+  val _mesos_framework = FrameworkFactory.createFramework(_mesos_driver)
 
   override def preStart = {
     super.preStart()
-    // After Actor init, send to self to refreshJobList 1min later
-    fw.connect() foreach { case ((fwId, master, driver)) =>
-      log.info(s"init fw = $fw")
-      log.info(s" detail fwId = $fwId master = $master, driver = $driver")
 
-      scheduler.scheduleOnce(10 seconds, self, RefreshJobList())
+    // Init mesos FrameWork
+    _mesos_framework.connect() onComplete {
+      case Success((fwId, master, driver)) =>
+        log.info(s"init fw = ${_mesos_framework}")
+        log.info(s" detail fwId = $fwId master = $master, driver = $driver")
+        scheduler.scheduleOnce(60 seconds, self, RefreshJobList())
+      case Failure(err) =>
+        logError(err, s"Init Mesos FrameWork failed")
+        sys.exit(0)
     }
   }
 
@@ -96,22 +90,13 @@ class JobManager
   def receive = {
     case m: AddJobs => {
       _jobMap = _jobMap ++ m.jobs.map { job => (job.jobId, job) }.toMap
+      log.info(s"jobMap = ${showJobMap}")
       reScheduleJobs()
     }
-      log.info(s"jobMap = ${showJobMap}")
     case m: DeleteJob => {
       _jobMap -= m.id
-    }
       log.info(s"jobMap = ${showJobMap}")
-    case m: AddJobActor => {
-      _jobActors += (m.id -> m.actor)
-    }
-      log.info(s"jobActors = ${_jobActors}")
-    case m: DeleteJobActor => {
-      _jobActors.get(m.id) foreach { actor =>
-        actor ! PoisonPill
-        _jobActors -= m.id
-      }
+      reScheduleJobs()
     }
 
     case m: RefreshJobList => refreshJobList()
@@ -128,7 +113,7 @@ class JobManager
     log.info(s"RefreshJobList ${DateTime.now} and setting scheduler again")
 
     // send self to refreshJobList $refresh_time_interval min later
-//    scheduler.scheduleOnce(refresh_time_interval, self, RefreshJobList())
+    scheduler.scheduleOnce(refresh_time_interval, self, RefreshJobList())
 
     log.debug(s"Before refreshJobList JobList = ${showJobMap}")
 
@@ -146,7 +131,6 @@ class JobManager
     } onComplete {
       case Success(taskList) =>
         updateJobMap(taskList)
-//        reScheduleJobs()
       case Failure(err) =>
         logError(err, s"WebClient get newest Job List from ${web_task_url} Failed")
     }
@@ -158,64 +142,34 @@ class JobManager
     * @param taskList
     */
   def updateJobMap(taskList: List[SparkJob]): Unit = {
-    val fList = taskList.filter(_.canScheduler)
-    log.debug(s"Flist = $fList")
-    if (fList.nonEmpty)
-      self ! AddJobs(fList)
+    val waitingJobList = taskList.filter(_.canScheduler)
+    log.debug(s"Waiting Job List = ${waitingJobList.mkString("\n")}")
+    if (waitingJobList.nonEmpty)
+      self ! AddJobs(waitingJobList)
   }
 
   def reScheduleJobs() = {
     getSatisfyJob(_jobMap.map(_._2).toList) foreach { job =>
-      var cj = job.asInstanceOf[SparkJob]
-      val tinfo = cj.toTask()
-      val lauched = fw.submitTask(tinfo)
-      for {
-        task <- lauched.info
-      } {
-        log.info(s"Submit Job $job")
-        val taskId = task.taskId.toString
-        cj = cj.copy(mesos_task_id = taskId, status = JobStatus.TaskRunning.id.toString)
-        self ! ChangeJobStatus(cj)
-        lauched.events.subscribe(x =>
-          x match {
-            case te: TaskEvent =>
-              log.info(s" Task Event = $te")
-              val jobStatus: JobStatus.Value = te.state
-              cj = cj.copy(status = jobStatus.id.toString,
-                mesos_task_id = te.taskId.toString()
-              )
-              self ! ChangeJobStatus(cj)
-            case m =>
-              log.debug(s"problem error m = $m")
-          })
+      var currentJob = job.asInstanceOf[SparkJob]
+      val task = currentJob.toTask()
+      val launcher = _mesos_framework.submitTask(task)
+      for {task <- launcher.info} {
+        log.info(s"Submit ${currentJob.summary} to MesosFrameWork ${_mesos_framework_info.name}")
+        currentJob = currentJob.copy(
+          mesos_task_id = task.taskId.toString,
+          status = JobStatus.TaskRunning.id.toString)
+        self ! ChangeJobStatus(currentJob)
+        launcher.events.subscribe(_ match {
+          case te: TaskEvent =>
+            log.info(s"Job ${currentJob.jobId} Status Change To ${te.status}")
+            val jobStatus: JobStatus.Value = te.state
+            currentJob = currentJob.copy(status = jobStatus.id.toString)
+            self ! ChangeJobStatus(currentJob)
+          case m =>
+            log.error(s"Not Recognize Event $m")
+        })
       }
     }
-    //      launched = fw.submitTask(task)
-    //      task <- launched.info
-    //    } {
-    //      log.info(s"Task successfully started on slave ${task.slaveId.value}")
-    //      val taskId = task.taskId.toString
-    //      launched.events.subscribe(_ match {
-    //        case te: TaskEvent =>
-    //          if (te.state.isTaskError)
-    //            p.failure(new MesosException(s"Task Running Error ${te.toString}"))
-    //          log.info(s" Task Event = $te")
-    //          updateTaskStatus(te.status)
-    //        case m =>
-    //          log.debug(s"Mesos Running Event Not Support Now $m")
-    //      })
-    //      val jobActor = context.actorOf(
-    //        MesosJobHandler.props(job),
-    //        MesosJobHandler.getName(jobId = job.jobId)
-    //      )
-    //      (jobActor ? StartTask(job)) onComplete {
-    //        case Success(init) if init.isInstanceOf[ActorInitOk] =>
-    //          log.info(s"Init JobActor for Job ${job.jobId} Success")
-    //          self ! AddJobActor(job.jobId, jobActor)
-    //        case Failure(err) =>
-    //          logError(err, s"Init JobActor for Job ${job.jobId} Failed")
-    //      }
-    //    }
   }
 
   /**
@@ -227,33 +181,6 @@ class JobManager
     }
     ss.mkString("\n")
   }
-
-  //  /**
-  //    * TODO  这里后续需要修改算法
-  //    * 1 具体是返回1个还是若干个？
-  //    * 2 具体一次调度一个还是调度若干个？
-  //    *
-  //    * @param s
-  //    * @param msg
-  //    */
-  //  def returnAvailableJob(s: ActorRef, msg: GetAvailableJob): Unit = {
-  //    val jobs: List[Job] = jobMap.filter {
-  //      case (id, task) =>
-  //        task.jobStatus != JobStatus.TaskFinished &&
-  //          task.jobStatus != JobStatus.TaskFailed &&
-  //          task.jobStatus != JobStatus.TaskNotSupport &&
-  //          task.jobStatus != JobStatus.TaskRunning
-  //    }.filter {
-  //      case (id, task) =>
-  //        if (msg.typ.isDefined) msg.typ.exists(_ == task.jobType)
-  //        else true
-  //    }.map(_._2)
-  //      .toList
-  //      .sortBy(_.jobSubmitTime.getMillis)
-  //      .take(avaliable_job_list_sz)
-  //    s ! AvailableJobList(jobs)
-  //    ()
-  //  }
 
   /**
     * ChangeJobStatus
@@ -271,6 +198,5 @@ class JobManager
       _jobMap.updated(job.jobId, job)
     }
   }
-
 
 }
