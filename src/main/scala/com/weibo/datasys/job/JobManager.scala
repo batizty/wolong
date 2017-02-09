@@ -63,7 +63,7 @@ class JobManager
   // TODO 后续这些机制可能会有变化
   // 现在
   val scheduler = context.system.scheduler
-  val refresh_time_interval = 5 minutes
+  val refresh_time_interval = 30 seconds
   val avaliable_job_list_sz: Int = 5
   // private Value for Scheduler
   private var _jobMap: Map[String, Job] = Map.empty
