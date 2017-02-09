@@ -22,6 +22,7 @@ object MesosSimpleHandler
            task: TaskDescriptor,
            user: Option[String] = None
          )(updateTaskStatus: TaskStatus => Unit): Future[Unit] = {
+    // TODO 这里User需要修改
     val fw_info = FrameworkInfo(
       name = mesos_framework_name,
       user = mesos_default_user)
