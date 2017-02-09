@@ -9,8 +9,8 @@ import scala.collection.concurrent
 import scala.concurrent.Future
 
 /**
-  * Created by tuoyu on 09/02/2017.
-  */
+ * Created by tuoyu on 09/02/2017.
+ */
 class WeiScheduling extends Scheduling with TaskAllocator {
 
   private[this] val currentOffers = new concurrent.TrieMap[OfferID, Offer]

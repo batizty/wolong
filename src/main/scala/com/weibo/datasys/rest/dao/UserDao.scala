@@ -11,8 +11,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 /**
-  * Created by tuoyu on 26/01/2017.
-  */
+ * Created by tuoyu on 26/01/2017.
+ */
 trait UserDao {
   def getAllUser(): Future[List[User]]
 
@@ -23,7 +23,7 @@ trait UserDao {
 
 class DBUserDao
   extends UserDao
-    with Configuration {
+  with Configuration {
 
   val log = LoggerFactory.getLogger("DBUserDao")
   val users = TableQuery[DBUserTable]
@@ -49,7 +49,7 @@ class DBUserDao
 
 class WebUserDao
   extends UserDao
-    with Configuration {
+  with Configuration {
   val log = LoggerFactory.getLogger(getClass.getName)
   implicit val formats = DefaultFormats
 

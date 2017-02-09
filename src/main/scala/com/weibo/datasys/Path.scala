@@ -1,8 +1,8 @@
 package com.weibo.datasys
 
 /**
-  * Created by tuoyu on 03/02/2017.
-  */
+ * Created by tuoyu on 03/02/2017.
+ */
 object Path extends Enumeration {
   val AUTH = "Auth"
   val CLUSTER = "Cluster"

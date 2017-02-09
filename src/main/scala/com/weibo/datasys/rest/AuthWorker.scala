@@ -8,12 +8,12 @@ import com.weibo.datasys.rest.data.{Group, User}
 import scala.concurrent.Future
 
 /**
-  * Created by tuoyu on 03/02/2017.
-  */
+ * Created by tuoyu on 03/02/2017.
+ */
 
 class AuthWorker
   extends BaseActor
-    with Configuration {
+  with Configuration {
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -51,9 +51,9 @@ class AuthWorker
   }
 
   def check(
-             userFlag: Boolean = false,
-             groupFlag: Boolean = false
-           )(f: (List[User], List[Group]) => Unit): Unit = {
+    userFlag: Boolean = false,
+    groupFlag: Boolean = false
+  )(f: (List[User], List[Group]) => Unit): Unit = {
     val users =
       if (userFlag)
         userDao.getAllUser()

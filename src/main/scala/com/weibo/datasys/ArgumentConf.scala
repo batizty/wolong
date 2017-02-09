@@ -4,8 +4,8 @@ import org.rogach.scallop.ScallopConf
 import org.slf4j.LoggerFactory
 
 /**
-  * Created by tuoyu on 09/02/2017.
-  */
+ * Created by tuoyu on 09/02/2017.
+ */
 
 class ArgumentConf(args: Seq[String])
   extends ScallopConf(args) {

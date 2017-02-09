@@ -12,8 +12,8 @@ import scala.concurrent.Future
 import scala.concurrent.duration._
 
 /**
-  * Created by tuoyu on 04/02/2017.
-  */
+ * Created by tuoyu on 04/02/2017.
+ */
 object WebClient extends Configuration {
   val log = LoggerFactory.getLogger(getClass.getName)
 
@@ -40,7 +40,7 @@ object WebClient extends Configuration {
   //    }
   //  }
 
-  def accessURL[T: FromResponseUnmarshaller : Manifest](url: String): Future[Option[T]] = {
+  def accessURL[T: FromResponseUnmarshaller: Manifest](url: String): Future[Option[T]] = {
     val pipeline = sendReceive ~> unmarshal[T]
     pipeline {
       Get(url)

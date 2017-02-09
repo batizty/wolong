@@ -11,11 +11,11 @@ import spray.routing.HttpService
 import scala.concurrent.duration._
 
 /**
-  * Created by tuoyu on 03/02/2017.
-  */
+ * Created by tuoyu on 03/02/2017.
+ */
 trait AuthService
   extends HttpService
-    with Configuration {
+  with Configuration {
   implicit val timeout = Timeout(expiredTime seconds)
   val authWorker = actorRefFactory.actorOf(Props[AuthWorker], "auth-worker")
   val authRoute = {
@@ -66,11 +66,11 @@ case class GetValidShell() extends AuthMessage
 case class ValidConfFile(message: String) extends AuthMessage
 
 case class CheckUserValid(
-                           name: String,
-                           group: Option[String] = None,
-                           password: Option[String] = None,
-                           token: Option[String] = None
-                         ) extends AuthMessage
+  name: String,
+  group: Option[String] = None,
+  password: Option[String] = None,
+  token: Option[String] = None
+) extends AuthMessage
 
 case class AuthResult(message: String = "", code: Int = 0) extends AuthMessage {
   implicit val format = Serialization.formats(NoTypeHints)

@@ -8,8 +8,8 @@ import org.slf4j.LoggerFactory
 import scala.xml._
 
 /**
-  * Created by tuoyu on 04/02/2017.
-  */
+ * Created by tuoyu on 04/02/2017.
+ */
 object HadoopPolicySettor {
   val log = LoggerFactory.getLogger(getClass.getName)
 
@@ -45,10 +45,10 @@ object HadoopPolicySettor {
   }
 
   def getValidHadoopPolicyXML(
-                               users: List[User],
-                               groups: List[Group],
-                               path: Option[String] = None
-                             ): Option[String] = {
+    users: List[User],
+    groups: List[Group],
+    path: Option[String] = None
+  ): Option[String] = {
     val fname = path.getOrElse(default_xml)
     try {
       val stream: InputStream = getClass.getResourceAsStream("/" + fname)
@@ -64,7 +64,7 @@ object HadoopPolicySettor {
 
       val xml2 =
         <configuration>
-          {nvmap2 map { x => updateXMLFile(x) }}
+          { nvmap2 map { x => updateXMLFile(x) } }
         </configuration>
 
       val p = new PrettyPrinter(80, 4)
@@ -80,10 +80,10 @@ object HadoopPolicySettor {
     val (n, v) = e
     <property>
       <name>
-        {n}
+        { n }
       </name>
       <value>
-        {v}
+        { v }
       </value>
     </property>
 

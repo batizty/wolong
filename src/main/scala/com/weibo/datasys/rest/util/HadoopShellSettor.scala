@@ -7,8 +7,8 @@ import scala.io.Source
 import scala.util.Try
 
 /**
-  * Created by tuoyu on 04/02/2017.
-  */
+ * Created by tuoyu on 04/02/2017.
+ */
 object HadoopShellSettor {
   val log = LoggerFactory.getLogger(getClass.getName)
 
@@ -20,10 +20,10 @@ object HadoopShellSettor {
   }
 
   def getValidHadoopShell(
-                           users: List[User],
-                           groups: List[Group],
-                           path: Option[String] = None
-                         ): Option[String] = {
+    users: List[User],
+    groups: List[Group],
+    path: Option[String] = None
+  ): Option[String] = {
     val fname = path.getOrElse(default_shell)
     try {
       val resourcePath = getClass.getResource("/" + fname).getPath

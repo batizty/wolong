@@ -5,8 +5,8 @@ import com.typesafe.config.ConfigFactory
 import scala.util.Try
 
 /**
-  * Created by tuoyu on 26/01/2017.
-  */
+ * Created by tuoyu on 26/01/2017.
+ */
 trait Configuration {
 
   import Configuration._

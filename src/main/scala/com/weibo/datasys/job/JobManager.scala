@@ -18,16 +18,16 @@ import scala.concurrent.duration._
 import scala.util.{Failure, Success}
 
 /**
-  * JobManager 作用
-  * 1 定期从接口获得新的Job
-  * 2 接受rest接口传递来的新Job
-  * 3 根据Job的情况，启动JobActor来执行任务，并且对执行中的任务进行监控
-  * 4 管理JobActor
-  * 5 对接调度插件
-  * 6 对接Mesos资源内容
-  *
-  * Created by tuoyu on 06/02/2017.
-  */
+ * JobManager 作用
+ * 1 定期从接口获得新的Job
+ * 2 接受rest接口传递来的新Job
+ * 3 根据Job的情况，启动JobActor来执行任务，并且对执行中的任务进行监控
+ * 4 管理JobActor
+ * 5 对接调度插件
+ * 6 对接Mesos资源内容
+ *
+ * Created by tuoyu on 06/02/2017.
+ */
 object JobManager {
   val Name = "Job-Manager"
 
@@ -47,8 +47,8 @@ object JobManager {
 
 class JobManager
   extends BaseActor
-    with SimpleSchedulerFIFO
-    with Configuration {
+  with SimpleSchedulerFIFO
+  with Configuration {
 
   // imports all messages(case class)
   import JobManager._
@@ -103,8 +103,8 @@ class JobManager
   }
 
   /**
-    * Get Job Data From Remote RestAPI and refresh _jobMap
-    */
+   * Get Job Data From Remote RestAPI and refresh _jobMap
+   */
   def refreshJobList(): Unit = {
     import com.weibo.datasys.util.WebClient
     log.info(s"RefreshJobList ${DateTime.now} and setting scheduler again")
@@ -134,10 +134,10 @@ class JobManager
   }
 
   /**
-    * Update _jobMap
-    *
-    * @param taskList
-    */
+   * Update _jobMap
+   *
+   * @param taskList
+   */
   def updateJobMap(taskList: List[SparkJob]): Unit = {
     val waitingJobList = taskList.filter(_.canScheduler)
     log.debug(s"Waiting Job List = ${waitingJobList.mkString("\n")}")
@@ -146,10 +146,10 @@ class JobManager
   }
 
   /**
-    * show _jobMap details
-    */
+   * show _jobMap details
+   */
   def showJobMap: String = {
-    val ss = for {(id, task) <- _jobMap} yield {
+    val ss = for { (id, task) <- _jobMap } yield {
       s"$id -> ${task.summary}"
     }
     ss.mkString("\n")
@@ -160,7 +160,7 @@ class JobManager
       var currentJob = job.asInstanceOf[SparkJob]
       val task = currentJob.toTask()
       val launcher = _mesos_framework.submitTask(task)
-      for {task <- launcher.info} {
+      for { task <- launcher.info } {
         log.info(s"Submit ${currentJob.summary} to MesosFrameWork ${_mesos_framework_info.name}")
         currentJob = currentJob.copy(
           mesos_task_id = task.taskId.toString,
@@ -181,10 +181,10 @@ class JobManager
   }
 
   /**
-    * ChangeJobStatus
-    * 1 update Job Status depends jobid
-    * 2 if job finished or failed status, delete job in _jobMap and _jobActor
-    */
+   * ChangeJobStatus
+   * 1 update Job Status depends jobid
+   * 2 if job finished or failed status, delete job in _jobMap and _jobActor
+   */
   def changeJobStatus(msg: ChangeJobStatus): Unit = synchronized {
     val job = msg.job
     log.info(s"Change Job ${job.jobId} Status To ${job.jobStatus}")

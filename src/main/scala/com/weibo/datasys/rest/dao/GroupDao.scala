@@ -12,8 +12,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 /**
-  * Created by tuoyu on 26/01/2017.
-  */
+ * Created by tuoyu on 26/01/2017.
+ */
 trait GroupDao {
   def getAllGroup(): Future[List[Group]]
 
@@ -49,7 +49,7 @@ class DBGroupDao
 
 class WebGroupDao
   extends GroupDao
-    with Configuration {
+  with Configuration {
   val log = LoggerFactory.getLogger(getClass.getName)
   implicit val formats = DefaultFormats
 

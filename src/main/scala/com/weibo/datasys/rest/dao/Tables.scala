@@ -163,21 +163,21 @@ trait Tables {
   }
 
   /**
-    * Entity class storing rows of table MmDataMining
-    *
-    *  @param id Database column id SqlType(BIGINT), AutoInc, PrimaryKey
+   * Entity class storing rows of table MmDataMining
+   *
+   *  @param id Database column id SqlType(BIGINT), AutoInc, PrimaryKey
    *  @param createdate Database column createDate SqlType(DATETIME), Default(None)
    *  @param totalcount Database column totalCount SqlType(BIGINT), Default(None)
    *  @param `type` Database column type SqlType(INT)
    *  @param typedesc Database column typeDesc SqlType(VARCHAR), Length(255,true), Default(None)
-    * @param totalresultcount Database column totalResultCount SqlType(BIGINT), Default(None)
-    */
+   * @param totalresultcount Database column totalResultCount SqlType(BIGINT), Default(None)
+   */
   case class MmDataMiningRow(id: Long, createdate: Option[java.sql.Timestamp] = None, totalcount: Option[Long] = None, `type`: Int, typedesc: Option[String] = None, totalresultcount: Option[Long] = None)
 
   /**
-    * Table description of table mm_data_mining. Objects of this class serve as prototypes for rows in queries.
-    * NOTE: The following names collided with Scala keywords and were escaped: type
-    */
+   * Table description of table mm_data_mining. Objects of this class serve as prototypes for rows in queries.
+   * NOTE: The following names collided with Scala keywords and were escaped: type
+   */
   class MmDataMining(_tableTag: Tag) extends profile.api.Table[MmDataMiningRow](_tableTag, Some("datasys_monitor"), "mm_data_mining") {
     /** Database column id SqlType(BIGINT), AutoInc, PrimaryKey */
     val id: Rep[Long] = column[Long]("id", O.AutoInc, O.PrimaryKey)
@@ -186,31 +186,31 @@ trait Tables {
     /** Database column totalCount SqlType(BIGINT), Default(None) */
     val totalcount: Rep[Option[Long]] = column[Option[Long]]("totalCount", O.Default(None))
     /**
-      * Database column type SqlType(INT)
-      * NOTE: The name was escaped because it collided with a Scala keyword.
-      */
+     * Database column type SqlType(INT)
+     * NOTE: The name was escaped because it collided with a Scala keyword.
+     */
     val `type`: Rep[Int] = column[Int]("type")
     /** Database column typeDesc SqlType(VARCHAR), Length(255,true), Default(None) */
     val typedesc: Rep[Option[String]] = column[Option[String]]("typeDesc", O.Length(255, varying = true), O.Default(None))
     /** Database column totalResultCount SqlType(BIGINT), Default(None) */
     val totalresultcount: Rep[Option[Long]] = column[Option[Long]]("totalResultCount", O.Default(None))
 
-    def * = (id, createdate, totalcount, `type`, typedesc, totalresultcount) <>(MmDataMiningRow.tupled, MmDataMiningRow.unapply)
+    def * = (id, createdate, totalcount, `type`, typedesc, totalresultcount) <> (MmDataMiningRow.tupled, MmDataMiningRow.unapply)
 
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(id), createdate, totalcount, Rep.Some(`type`), typedesc, totalresultcount).shaped.<>({ r =>; _1.map(_ => MmDataMiningRow.tupled((_1.get, _2, _3, _4.get, _5, _6))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
+    def ? = (Rep.Some(id), createdate, totalcount, Rep.Some(`type`), typedesc, totalresultcount).shaped.<>({ r => ; _1.map(_ => MmDataMiningRow.tupled((_1.get, _2, _3, _4.get, _5, _6))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
   }
 
   /**
-    * Entity class storing rows of table MmDataVisitorInteraction
-    *
-    *  @param id Database column id SqlType(BIGINT), AutoInc, PrimaryKey
+   * Entity class storing rows of table MmDataVisitorInteraction
+   *
+   *  @param id Database column id SqlType(BIGINT), AutoInc, PrimaryKey
    *  @param action Database column action SqlType(INT)
    *  @param count Database column count SqlType(BIGINT), Default(None)
    *  @param countdate Database column countDate SqlType(DATETIME), Default(None)
    *  @param createdate Database column createDate SqlType(DATETIME), Default(None)
    *  @param uidTailType Database column uid_tail_type SqlType(INT)
-    * @param userType Database column user_type SqlType(INT)
+   * @param userType Database column user_type SqlType(INT)
    */
   case class MmDataVisitorInteractionRow(id: Long, action: Int, count: Option[Long] = None, countdate: Option[java.sql.Timestamp] = None, createdate: Option[java.sql.Timestamp] = None, uidTailType: Int, userType: Int)
 
@@ -231,23 +231,23 @@ trait Tables {
     /** Database column user_type SqlType(INT) */
     val userType: Rep[Int] = column[Int]("user_type")
 
-    def * = (id, action, count, countdate, createdate, uidTailType, userType) <>(MmDataVisitorInteractionRow.tupled, MmDataVisitorInteractionRow.unapply)
+    def * = (id, action, count, countdate, createdate, uidTailType, userType) <> (MmDataVisitorInteractionRow.tupled, MmDataVisitorInteractionRow.unapply)
 
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(id), Rep.Some(action), count, countdate, createdate, Rep.Some(uidTailType), Rep.Some(userType)).shaped.<>({ r =>; _1.map(_ => MmDataVisitorInteractionRow.tupled((_1.get, _2.get, _3, _4, _5, _6.get, _7.get))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
+    def ? = (Rep.Some(id), Rep.Some(action), count, countdate, createdate, Rep.Some(uidTailType), Rep.Some(userType)).shaped.<>({ r => ; _1.map(_ => MmDataVisitorInteractionRow.tupled((_1.get, _2.get, _3, _4, _5, _6.get, _7.get))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
   }
 
   /**
-    * Entity class storing rows of table MmDataVisitorRemain
-    *
-    *  @param id Database column id SqlType(BIGINT), AutoInc, PrimaryKey
+   * Entity class storing rows of table MmDataVisitorRemain
+   *
+   *  @param id Database column id SqlType(BIGINT), AutoInc, PrimaryKey
    *  @param countdate Database column countDate SqlType(DATETIME), Default(None)
    *  @param createdate Database column createDate SqlType(DATETIME), Default(None)
    *  @param pvcount Database column pvCount SqlType(BIGINT), Default(None)
    *  @param remainDaysType Database column remain_days_type SqlType(INT)
    *  @param uidTailType Database column uid_tail_type SqlType(INT)
    *  @param userType Database column user_type SqlType(INT)
-    * @param uvcount Database column uvCount SqlType(BIGINT), Default(None)
+   * @param uvcount Database column uvCount SqlType(BIGINT), Default(None)
    */
   case class MmDataVisitorRemainRow(id: Long, countdate: Option[java.sql.Timestamp] = None, createdate: Option[java.sql.Timestamp] = None, pvcount: Option[Long] = None, remainDaysType: Int, uidTailType: Int, userType: Int, uvcount: Option[Long] = None)
 
@@ -270,22 +270,22 @@ trait Tables {
     /** Database column uvCount SqlType(BIGINT), Default(None) */
     val uvcount: Rep[Option[Long]] = column[Option[Long]]("uvCount", O.Default(None))
 
-    def * = (id, countdate, createdate, pvcount, remainDaysType, uidTailType, userType, uvcount) <>(MmDataVisitorRemainRow.tupled, MmDataVisitorRemainRow.unapply)
+    def * = (id, countdate, createdate, pvcount, remainDaysType, uidTailType, userType, uvcount) <> (MmDataVisitorRemainRow.tupled, MmDataVisitorRemainRow.unapply)
 
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(id), countdate, createdate, pvcount, Rep.Some(remainDaysType), Rep.Some(uidTailType), Rep.Some(userType), uvcount).shaped.<>({ r =>; _1.map(_ => MmDataVisitorRemainRow.tupled((_1.get, _2, _3, _4, _5.get, _6.get, _7.get, _8))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
+    def ? = (Rep.Some(id), countdate, createdate, pvcount, Rep.Some(remainDaysType), Rep.Some(uidTailType), Rep.Some(userType), uvcount).shaped.<>({ r => ; _1.map(_ => MmDataVisitorRemainRow.tupled((_1.get, _2, _3, _4, _5.get, _6.get, _7.get, _8))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
   }
 
   /**
-    * Entity class storing rows of table MmDataVisitorUvPv
-    *
-    *  @param id Database column id SqlType(BIGINT), AutoInc, PrimaryKey
+   * Entity class storing rows of table MmDataVisitorUvPv
+   *
+   *  @param id Database column id SqlType(BIGINT), AutoInc, PrimaryKey
    *  @param countdate Database column countDate SqlType(DATETIME), Default(None)
    *  @param createdate Database column createDate SqlType(DATETIME), Default(None)
    *  @param pvcount Database column pvCount SqlType(BIGINT), Default(None)
    *  @param uidTailType Database column uid_tail_type SqlType(INT)
    *  @param userType Database column user_type SqlType(INT)
-    * @param uvcount Database column uvCount SqlType(BIGINT), Default(None)
+   * @param uvcount Database column uvCount SqlType(BIGINT), Default(None)
    */
   case class MmDataVisitorUvPvRow(id: Long, countdate: Option[java.sql.Timestamp] = None, createdate: Option[java.sql.Timestamp] = None, pvcount: Option[Long] = None, uidTailType: Int, userType: Int, uvcount: Option[Long] = None)
 
@@ -306,28 +306,28 @@ trait Tables {
     /** Database column uvCount SqlType(BIGINT), Default(None) */
     val uvcount: Rep[Option[Long]] = column[Option[Long]]("uvCount", O.Default(None))
 
-    def * = (id, countdate, createdate, pvcount, uidTailType, userType, uvcount) <>(MmDataVisitorUvPvRow.tupled, MmDataVisitorUvPvRow.unapply)
+    def * = (id, countdate, createdate, pvcount, uidTailType, userType, uvcount) <> (MmDataVisitorUvPvRow.tupled, MmDataVisitorUvPvRow.unapply)
 
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(id), countdate, createdate, pvcount, Rep.Some(uidTailType), Rep.Some(userType), uvcount).shaped.<>({ r =>; _1.map(_ => MmDataVisitorUvPvRow.tupled((_1.get, _2, _3, _4, _5.get, _6.get, _7))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
+    def ? = (Rep.Some(id), countdate, createdate, pvcount, Rep.Some(uidTailType), Rep.Some(userType), uvcount).shaped.<>({ r => ; _1.map(_ => MmDataVisitorUvPvRow.tupled((_1.get, _2, _3, _4, _5.get, _6.get, _7))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
   }
 
   /**
-    * Entity class storing rows of table MmFlume
-    *
-    *  @param id Database column id SqlType(BIGINT), AutoInc, PrimaryKey
+   * Entity class storing rows of table MmFlume
+   *
+   *  @param id Database column id SqlType(BIGINT), AutoInc, PrimaryKey
    *  @param createdate Database column createDate SqlType(DATETIME), Default(None)
    *  @param totalcount Database column totalCount SqlType(BIGINT), Default(None)
    *  @param `type` Database column type SqlType(INT)
    *  @param typedesc Database column typeDesc SqlType(VARCHAR), Length(255,true), Default(None)
-    * @param totalnewcount Database column totalNewCount SqlType(BIGINT), Default(None)
+   * @param totalnewcount Database column totalNewCount SqlType(BIGINT), Default(None)
    */
   case class MmFlumeRow(id: Long, createdate: Option[java.sql.Timestamp] = None, totalcount: Option[Long] = None, `type`: Int, typedesc: Option[String] = None, totalnewcount: Option[Long] = None)
 
   /**
-    * Table description of table mm_flume. Objects of this class serve as prototypes for rows in queries.
-    * NOTE: The following names collided with Scala keywords and were escaped: type
-    */
+   * Table description of table mm_flume. Objects of this class serve as prototypes for rows in queries.
+   * NOTE: The following names collided with Scala keywords and were escaped: type
+   */
   class MmFlume(_tableTag: Tag) extends profile.api.Table[MmFlumeRow](_tableTag, Some("datasys_monitor"), "mm_flume") {
     /** Database column id SqlType(BIGINT), AutoInc, PrimaryKey */
     val id: Rep[Long] = column[Long]("id", O.AutoInc, O.PrimaryKey)
@@ -336,8 +336,8 @@ trait Tables {
     /** Database column totalCount SqlType(BIGINT), Default(None) */
     val totalcount: Rep[Option[Long]] = column[Option[Long]]("totalCount", O.Default(None))
     /**
-      * Database column type SqlType(INT)
-      * NOTE: The name was escaped because it collided with a Scala keyword.
+     * Database column type SqlType(INT)
+     * NOTE: The name was escaped because it collided with a Scala keyword.
      */
     val `type`: Rep[Int] = column[Int]("type")
     /** Database column typeDesc SqlType(VARCHAR), Length(255,true), Default(None) */
@@ -345,20 +345,20 @@ trait Tables {
     /** Database column totalNewCount SqlType(BIGINT), Default(None) */
     val totalnewcount: Rep[Option[Long]] = column[Option[Long]]("totalNewCount", O.Default(None))
 
-    def * = (id, createdate, totalcount, `type`, typedesc, totalnewcount) <>(MmFlumeRow.tupled, MmFlumeRow.unapply)
+    def * = (id, createdate, totalcount, `type`, typedesc, totalnewcount) <> (MmFlumeRow.tupled, MmFlumeRow.unapply)
 
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(id), createdate, totalcount, Rep.Some(`type`), typedesc, totalnewcount).shaped.<>({ r =>; _1.map(_ => MmFlumeRow.tupled((_1.get, _2, _3, _4.get, _5, _6))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
+    def ? = (Rep.Some(id), createdate, totalcount, Rep.Some(`type`), typedesc, totalnewcount).shaped.<>({ r => ; _1.map(_ => MmFlumeRow.tupled((_1.get, _2, _3, _4.get, _5, _6))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
   }
 
   /**
-    * Entity class storing rows of table MmGroup
-    *
-    *  @param id Database column id SqlType(BIGINT), AutoInc, PrimaryKey
+   * Entity class storing rows of table MmGroup
+   *
+   *  @param id Database column id SqlType(BIGINT), AutoInc, PrimaryKey
    *  @param cataloguename Database column catalogueName SqlType(VARCHAR), Length(255,true), Default(None)
    *  @param createat Database column createAt SqlType(DATETIME), Default(None)
    *  @param creator Database column creator SqlType(VARCHAR), Length(255,true), Default(None)
-    * @param groupname Database column groupName SqlType(VARCHAR), Length(255,true), Default(None)
+   * @param groupname Database column groupName SqlType(VARCHAR), Length(255,true), Default(None)
    */
   case class MmGroupRow(id: Long, cataloguename: Option[String] = None, createat: Option[java.sql.Timestamp] = None, creator: Option[String] = None, groupname: Option[String] = None)
 
@@ -375,28 +375,28 @@ trait Tables {
     /** Database column groupName SqlType(VARCHAR), Length(255,true), Default(None) */
     val groupname: Rep[Option[String]] = column[Option[String]]("groupName", O.Length(255, varying = true), O.Default(None))
 
-    def * = (id, cataloguename, createat, creator, groupname) <>(MmGroupRow.tupled, MmGroupRow.unapply)
+    def * = (id, cataloguename, createat, creator, groupname) <> (MmGroupRow.tupled, MmGroupRow.unapply)
 
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(id), cataloguename, createat, creator, groupname).shaped.<>({ r =>; _1.map(_ => MmGroupRow.tupled((_1.get, _2, _3, _4, _5))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
+    def ? = (Rep.Some(id), cataloguename, createat, creator, groupname).shaped.<>({ r => ; _1.map(_ => MmGroupRow.tupled((_1.get, _2, _3, _4, _5))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
   }
 
   /**
-    * Entity class storing rows of table MmKafka
-    *
-    *  @param id Database column id SqlType(BIGINT), AutoInc, PrimaryKey
+   * Entity class storing rows of table MmKafka
+   *
+   *  @param id Database column id SqlType(BIGINT), AutoInc, PrimaryKey
    *  @param createdate Database column createDate SqlType(DATETIME), Default(None)
    *  @param notconsumecount Database column notConsumeCount SqlType(BIGINT), Default(None)
    *  @param totalcount Database column totalCount SqlType(BIGINT), Default(None)
    *  @param `type` Database column type SqlType(INT)
-    * @param typedesc Database column typeDesc SqlType(VARCHAR), Length(255,true), Default(None)
+   * @param typedesc Database column typeDesc SqlType(VARCHAR), Length(255,true), Default(None)
    */
   case class MmKafkaRow(id: Long, createdate: Option[java.sql.Timestamp] = None, notconsumecount: Option[Long] = None, totalcount: Option[Long] = None, `type`: Int, typedesc: Option[String] = None)
 
   /**
-    * Table description of table mm_kafka. Objects of this class serve as prototypes for rows in queries.
-    * NOTE: The following names collided with Scala keywords and were escaped: type
-    */
+   * Table description of table mm_kafka. Objects of this class serve as prototypes for rows in queries.
+   * NOTE: The following names collided with Scala keywords and were escaped: type
+   */
   class MmKafka(_tableTag: Tag) extends profile.api.Table[MmKafkaRow](_tableTag, Some("datasys_monitor"), "mm_kafka") {
     /** Database column id SqlType(BIGINT), AutoInc, PrimaryKey */
     val id: Rep[Long] = column[Long]("id", O.AutoInc, O.PrimaryKey)
@@ -407,30 +407,30 @@ trait Tables {
     /** Database column totalCount SqlType(BIGINT), Default(None) */
     val totalcount: Rep[Option[Long]] = column[Option[Long]]("totalCount", O.Default(None))
     /**
-      * Database column type SqlType(INT)
-      * NOTE: The name was escaped because it collided with a Scala keyword.
+     * Database column type SqlType(INT)
+     * NOTE: The name was escaped because it collided with a Scala keyword.
      */
     val `type`: Rep[Int] = column[Int]("type")
     /** Database column typeDesc SqlType(VARCHAR), Length(255,true), Default(None) */
     val typedesc: Rep[Option[String]] = column[Option[String]]("typeDesc", O.Length(255, varying = true), O.Default(None))
 
-    def * = (id, createdate, notconsumecount, totalcount, `type`, typedesc) <>(MmKafkaRow.tupled, MmKafkaRow.unapply)
+    def * = (id, createdate, notconsumecount, totalcount, `type`, typedesc) <> (MmKafkaRow.tupled, MmKafkaRow.unapply)
 
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(id), createdate, notconsumecount, totalcount, Rep.Some(`type`), typedesc).shaped.<>({ r =>; _1.map(_ => MmKafkaRow.tupled((_1.get, _2, _3, _4, _5.get, _6))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
+    def ? = (Rep.Some(id), createdate, notconsumecount, totalcount, Rep.Some(`type`), typedesc).shaped.<>({ r => ; _1.map(_ => MmKafkaRow.tupled((_1.get, _2, _3, _4, _5.get, _6))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
   }
 
   /**
-    * Entity class storing rows of table MmSession
-    *
-    *  @param id Database column id SqlType(BIGINT), AutoInc, PrimaryKey
+   * Entity class storing rows of table MmSession
+   *
+   *  @param id Database column id SqlType(BIGINT), AutoInc, PrimaryKey
    *  @param createat Database column createAt SqlType(DATETIME), Default(None)
    *  @param expireddate Database column expiredDate SqlType(DATETIME), Default(None)
    *  @param groupid Database column groupId SqlType(BIGINT)
    *  @param indentfy Database column indentfy SqlType(INT)
    *  @param token Database column token SqlType(VARCHAR), Length(255,true), Default(None)
    *  @param userid Database column userId SqlType(BIGINT)
-    * @param username Database column userName SqlType(VARCHAR), Length(255,true), Default(None)
+   * @param username Database column userName SqlType(VARCHAR), Length(255,true), Default(None)
    */
   case class MmSessionRow(id: Long, createat: Option[java.sql.Timestamp] = None, expireddate: Option[java.sql.Timestamp] = None, groupid: Long, indentfy: Int, token: Option[String] = None, userid: Long, username: Option[String] = None)
 
@@ -453,29 +453,29 @@ trait Tables {
     /** Database column userName SqlType(VARCHAR), Length(255,true), Default(None) */
     val username: Rep[Option[String]] = column[Option[String]]("userName", O.Length(255, varying = true), O.Default(None))
 
-    def * = (id, createat, expireddate, groupid, indentfy, token, userid, username) <>(MmSessionRow.tupled, MmSessionRow.unapply)
+    def * = (id, createat, expireddate, groupid, indentfy, token, userid, username) <> (MmSessionRow.tupled, MmSessionRow.unapply)
 
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(id), createat, expireddate, Rep.Some(groupid), Rep.Some(indentfy), token, Rep.Some(userid), username).shaped.<>({ r =>; _1.map(_ => MmSessionRow.tupled((_1.get, _2, _3, _4.get, _5.get, _6, _7.get, _8))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
+    def ? = (Rep.Some(id), createat, expireddate, Rep.Some(groupid), Rep.Some(indentfy), token, Rep.Some(userid), username).shaped.<>({ r => ; _1.map(_ => MmSessionRow.tupled((_1.get, _2, _3, _4.get, _5.get, _6, _7.get, _8))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
   }
 
   /**
-    * Entity class storing rows of table MmStormTag
-    *
-    *  @param id Database column id SqlType(BIGINT), AutoInc, PrimaryKey
+   * Entity class storing rows of table MmStormTag
+   *
+   *  @param id Database column id SqlType(BIGINT), AutoInc, PrimaryKey
    *  @param createdate Database column createDate SqlType(DATETIME), Default(None)
    *  @param totalcount Database column totalCount SqlType(BIGINT), Default(None)
    *  @param `type` Database column type SqlType(INT)
    *  @param typedesc Database column typeDesc SqlType(VARCHAR), Length(255,true), Default(None)
    *  @param totaloriginalcount Database column totalOriginalCount SqlType(BIGINT), Default(None)
-    * @param totalheadtagcount Database column totalHeadTagCount SqlType(BIGINT), Default(None)
+   * @param totalheadtagcount Database column totalHeadTagCount SqlType(BIGINT), Default(None)
    */
   case class MmStormTagRow(id: Long, createdate: Option[java.sql.Timestamp] = None, totalcount: Option[Long] = None, `type`: Int, typedesc: Option[String] = None, totaloriginalcount: Option[Long] = None, totalheadtagcount: Option[Long] = None)
 
   /**
-    * Table description of table mm_storm_tag. Objects of this class serve as prototypes for rows in queries.
-    * NOTE: The following names collided with Scala keywords and were escaped: type
-    */
+   * Table description of table mm_storm_tag. Objects of this class serve as prototypes for rows in queries.
+   * NOTE: The following names collided with Scala keywords and were escaped: type
+   */
   class MmStormTag(_tableTag: Tag) extends profile.api.Table[MmStormTagRow](_tableTag, Some("datasys_monitor"), "mm_storm_tag") {
     /** Database column id SqlType(BIGINT), AutoInc, PrimaryKey */
     val id: Rep[Long] = column[Long]("id", O.AutoInc, O.PrimaryKey)
@@ -484,8 +484,8 @@ trait Tables {
     /** Database column totalCount SqlType(BIGINT), Default(None) */
     val totalcount: Rep[Option[Long]] = column[Option[Long]]("totalCount", O.Default(None))
     /**
-      * Database column type SqlType(INT)
-      * NOTE: The name was escaped because it collided with a Scala keyword.
+     * Database column type SqlType(INT)
+     * NOTE: The name was escaped because it collided with a Scala keyword.
      */
     val `type`: Rep[Int] = column[Int]("type")
     /** Database column typeDesc SqlType(VARCHAR), Length(255,true), Default(None) */
@@ -495,28 +495,28 @@ trait Tables {
     /** Database column totalHeadTagCount SqlType(BIGINT), Default(None) */
     val totalheadtagcount: Rep[Option[Long]] = column[Option[Long]]("totalHeadTagCount", O.Default(None))
 
-    def * = (id, createdate, totalcount, `type`, typedesc, totaloriginalcount, totalheadtagcount) <>(MmStormTagRow.tupled, MmStormTagRow.unapply)
+    def * = (id, createdate, totalcount, `type`, typedesc, totaloriginalcount, totalheadtagcount) <> (MmStormTagRow.tupled, MmStormTagRow.unapply)
 
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(id), createdate, totalcount, Rep.Some(`type`), typedesc, totaloriginalcount, totalheadtagcount).shaped.<>({ r =>; _1.map(_ => MmStormTagRow.tupled((_1.get, _2, _3, _4.get, _5, _6, _7))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
+    def ? = (Rep.Some(id), createdate, totalcount, Rep.Some(`type`), typedesc, totaloriginalcount, totalheadtagcount).shaped.<>({ r => ; _1.map(_ => MmStormTagRow.tupled((_1.get, _2, _3, _4.get, _5, _6, _7))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
   }
 
   /**
-    * Entity class storing rows of table MmTrigger
-    *
-    *  @param id Database column id SqlType(BIGINT), AutoInc, PrimaryKey
+   * Entity class storing rows of table MmTrigger
+   *
+   *  @param id Database column id SqlType(BIGINT), AutoInc, PrimaryKey
    *  @param createdate Database column createDate SqlType(DATETIME), Default(None)
    *  @param totalcount Database column totalCount SqlType(BIGINT), Default(None)
    *  @param totalresultcount Database column totalResultCount SqlType(BIGINT), Default(None)
    *  @param `type` Database column type SqlType(INT)
-    * @param typedesc Database column typeDesc SqlType(VARCHAR), Length(255,true), Default(None)
+   * @param typedesc Database column typeDesc SqlType(VARCHAR), Length(255,true), Default(None)
    */
   case class MmTriggerRow(id: Long, createdate: Option[java.sql.Timestamp] = None, totalcount: Option[Long] = None, totalresultcount: Option[Long] = None, `type`: Int, typedesc: Option[String] = None)
 
   /**
-    * Table description of table mm_trigger. Objects of this class serve as prototypes for rows in queries.
-    * NOTE: The following names collided with Scala keywords and were escaped: type
-    */
+   * Table description of table mm_trigger. Objects of this class serve as prototypes for rows in queries.
+   * NOTE: The following names collided with Scala keywords and were escaped: type
+   */
   class MmTrigger(_tableTag: Tag) extends profile.api.Table[MmTriggerRow](_tableTag, Some("datasys_monitor"), "mm_trigger") {
     /** Database column id SqlType(BIGINT), AutoInc, PrimaryKey */
     val id: Rep[Long] = column[Long]("id", O.AutoInc, O.PrimaryKey)
@@ -527,30 +527,30 @@ trait Tables {
     /** Database column totalResultCount SqlType(BIGINT), Default(None) */
     val totalresultcount: Rep[Option[Long]] = column[Option[Long]]("totalResultCount", O.Default(None))
     /**
-      * Database column type SqlType(INT)
-      * NOTE: The name was escaped because it collided with a Scala keyword.
+     * Database column type SqlType(INT)
+     * NOTE: The name was escaped because it collided with a Scala keyword.
      */
     val `type`: Rep[Int] = column[Int]("type")
     /** Database column typeDesc SqlType(VARCHAR), Length(255,true), Default(None) */
     val typedesc: Rep[Option[String]] = column[Option[String]]("typeDesc", O.Length(255, varying = true), O.Default(None))
 
-    def * = (id, createdate, totalcount, totalresultcount, `type`, typedesc) <>(MmTriggerRow.tupled, MmTriggerRow.unapply)
+    def * = (id, createdate, totalcount, totalresultcount, `type`, typedesc) <> (MmTriggerRow.tupled, MmTriggerRow.unapply)
 
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(id), createdate, totalcount, totalresultcount, Rep.Some(`type`), typedesc).shaped.<>({ r =>; _1.map(_ => MmTriggerRow.tupled((_1.get, _2, _3, _4, _5.get, _6))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
+    def ? = (Rep.Some(id), createdate, totalcount, totalresultcount, Rep.Some(`type`), typedesc).shaped.<>({ r => ; _1.map(_ => MmTriggerRow.tupled((_1.get, _2, _3, _4, _5.get, _6))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
   }
 
   /**
-    * Entity class storing rows of table MmUser
-    *
-    *  @param id Database column id SqlType(BIGINT), AutoInc, PrimaryKey
+   * Entity class storing rows of table MmUser
+   *
+   *  @param id Database column id SqlType(BIGINT), AutoInc, PrimaryKey
    *  @param createat Database column createAt SqlType(DATETIME), Default(None)
    *  @param groupid Database column groupId SqlType(BIGINT)
    *  @param indentfy Database column indentfy SqlType(INT)
    *  @param lastlogintime Database column lastLoginTime SqlType(DATETIME), Default(None)
    *  @param password Database column password SqlType(VARCHAR), Length(255,true), Default(None)
    *  @param state Database column state SqlType(VARCHAR), Length(255,true), Default(None)
-    * @param username Database column userName SqlType(VARCHAR), Length(255,true), Default(None)
+   * @param username Database column userName SqlType(VARCHAR), Length(255,true), Default(None)
    */
   case class MmUserRow(id: Long, createat: Option[java.sql.Timestamp] = None, groupid: Long, indentfy: Int, lastlogintime: Option[java.sql.Timestamp] = None, password: Option[String] = None, state: Option[String] = None, username: Option[String] = None)
 
@@ -575,22 +575,22 @@ trait Tables {
     /** Uniqueness Index over (username) (database name userName) */
     val index1 = index("userName", username, unique = true)
 
-    def * = (id, createat, groupid, indentfy, lastlogintime, password, state, username) <>(MmUserRow.tupled, MmUserRow.unapply)
+    def * = (id, createat, groupid, indentfy, lastlogintime, password, state, username) <> (MmUserRow.tupled, MmUserRow.unapply)
 
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(id), createat, Rep.Some(groupid), Rep.Some(indentfy), lastlogintime, password, state, username).shaped.<>({ r =>; _1.map(_ => MmUserRow.tupled((_1.get, _2, _3.get, _4.get, _5, _6, _7, _8))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
+    def ? = (Rep.Some(id), createat, Rep.Some(groupid), Rep.Some(indentfy), lastlogintime, password, state, username).shaped.<>({ r => ; _1.map(_ => MmUserRow.tupled((_1.get, _2, _3.get, _4.get, _5, _6, _7, _8))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
   }
 
   /**
-    * Entity class storing rows of table MmWeidisMetrics
-    *
-    *  @param id Database column id SqlType(BIGINT), AutoInc, PrimaryKey
+   * Entity class storing rows of table MmWeidisMetrics
+   *
+   *  @param id Database column id SqlType(BIGINT), AutoInc, PrimaryKey
    *  @param averageresponsetime Database column averageResponseTime SqlType(DOUBLE), Default(None)
    *  @param host Database column host SqlType(VARCHAR), Length(255,true), Default(None)
    *  @param queriespersecond Database column queriesPerSecond SqlType(DOUBLE), Default(None)
    *  @param shard Database column shard SqlType(VARCHAR), Length(255,true), Default(None)
    *  @param timestamp Database column timeStamp SqlType(DATETIME), Default(None)
-    * @param vertical Database column vertical SqlType(VARCHAR), Length(255,true), Default(None)
+   * @param vertical Database column vertical SqlType(VARCHAR), Length(255,true), Default(None)
    */
   case class MmWeidisMetricsRow(id: Long, averageresponsetime: Option[Double] = None, host: Option[String] = None, queriespersecond: Option[Double] = None, shard: Option[String] = None, timestamp: Option[java.sql.Timestamp] = None, vertical: Option[String] = None)
 
@@ -611,23 +611,23 @@ trait Tables {
     /** Database column vertical SqlType(VARCHAR), Length(255,true), Default(None) */
     val vertical: Rep[Option[String]] = column[Option[String]]("vertical", O.Length(255, varying = true), O.Default(None))
 
-    def * = (id, averageresponsetime, host, queriespersecond, shard, timestamp, vertical) <>(MmWeidisMetricsRow.tupled, MmWeidisMetricsRow.unapply)
+    def * = (id, averageresponsetime, host, queriespersecond, shard, timestamp, vertical) <> (MmWeidisMetricsRow.tupled, MmWeidisMetricsRow.unapply)
 
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(id), averageresponsetime, host, queriespersecond, shard, timestamp, vertical).shaped.<>({ r =>; _1.map(_ => MmWeidisMetricsRow.tupled((_1.get, _2, _3, _4, _5, _6, _7))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
+    def ? = (Rep.Some(id), averageresponsetime, host, queriespersecond, shard, timestamp, vertical).shaped.<>({ r => ; _1.map(_ => MmWeidisMetricsRow.tupled((_1.get, _2, _3, _4, _5, _6, _7))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
   }
 
   /**
-    * Entity class storing rows of table MmWgis
-    *
-    *  @param id Database column id SqlType(BIGINT), AutoInc, PrimaryKey
+   * Entity class storing rows of table MmWgis
+   *
+   *  @param id Database column id SqlType(BIGINT), AutoInc, PrimaryKey
    *  @param createdate Database column createDate SqlType(DATETIME), Default(None)
    *  @param host Database column host SqlType(VARCHAR), Length(255,true), Default(None)
    *  @param querycount Database column querycount SqlType(DOUBLE), Default(None)
    *  @param shard Database column shard SqlType(VARCHAR), Length(255,true), Default(None)
    *  @param timecount Database column timecount SqlType(DOUBLE), Default(None)
    *  @param timerange Database column timerange SqlType(DOUBLE), Default(None)
-    * @param vertical Database column vertical SqlType(VARCHAR), Length(255,true), Default(None)
+   * @param vertical Database column vertical SqlType(VARCHAR), Length(255,true), Default(None)
    */
   case class MmWgisRow(id: Long, createdate: Option[java.sql.Timestamp] = None, host: Option[String] = None, querycount: Option[Double] = None, shard: Option[String] = None, timecount: Option[Double] = None, timerange: Option[Double] = None, vertical: Option[String] = None)
 
@@ -650,22 +650,22 @@ trait Tables {
     /** Database column vertical SqlType(VARCHAR), Length(255,true), Default(None) */
     val vertical: Rep[Option[String]] = column[Option[String]]("vertical", O.Length(255, varying = true), O.Default(None))
 
-    def * = (id, createdate, host, querycount, shard, timecount, timerange, vertical) <>(MmWgisRow.tupled, MmWgisRow.unapply)
+    def * = (id, createdate, host, querycount, shard, timecount, timerange, vertical) <> (MmWgisRow.tupled, MmWgisRow.unapply)
 
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(id), createdate, host, querycount, shard, timecount, timerange, vertical).shaped.<>({ r =>; _1.map(_ => MmWgisRow.tupled((_1.get, _2, _3, _4, _5, _6, _7, _8))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
+    def ? = (Rep.Some(id), createdate, host, querycount, shard, timecount, timerange, vertical).shaped.<>({ r => ; _1.map(_ => MmWgisRow.tupled((_1.get, _2, _3, _4, _5, _6, _7, _8))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
   }
 
   /**
-    * Entity class storing rows of table MmWgisMetrics
-    *
-    *  @param id Database column id SqlType(BIGINT), AutoInc, PrimaryKey
+   * Entity class storing rows of table MmWgisMetrics
+   *
+   *  @param id Database column id SqlType(BIGINT), AutoInc, PrimaryKey
    *  @param averageresponsetime Database column averageResponseTime SqlType(DOUBLE), Default(None)
    *  @param host Database column host SqlType(VARCHAR), Length(255,true), Default(None)
    *  @param queriespersecond Database column queriesPerSecond SqlType(DOUBLE), Default(None)
    *  @param shard Database column shard SqlType(VARCHAR), Length(255,true), Default(None)
    *  @param timestamp Database column timeStamp SqlType(DATETIME), Default(None)
-    * @param vertical Database column vertical SqlType(VARCHAR), Length(255,true), Default(None)
+   * @param vertical Database column vertical SqlType(VARCHAR), Length(255,true), Default(None)
    */
   case class MmWgisMetricsRow(id: Long, averageresponsetime: Option[Double] = None, host: Option[String] = None, queriespersecond: Option[Double] = None, shard: Option[String] = None, timestamp: Option[java.sql.Timestamp] = None, vertical: Option[String] = None)
 
@@ -686,17 +686,17 @@ trait Tables {
     /** Database column vertical SqlType(VARCHAR), Length(255,true), Default(None) */
     val vertical: Rep[Option[String]] = column[Option[String]]("vertical", O.Length(255, varying = true), O.Default(None))
 
-    def * = (id, averageresponsetime, host, queriespersecond, shard, timestamp, vertical) <>(MmWgisMetricsRow.tupled, MmWgisMetricsRow.unapply)
+    def * = (id, averageresponsetime, host, queriespersecond, shard, timestamp, vertical) <> (MmWgisMetricsRow.tupled, MmWgisMetricsRow.unapply)
 
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = (Rep.Some(id), averageresponsetime, host, queriespersecond, shard, timestamp, vertical).shaped.<>({ r =>; _1.map(_ => MmWgisMetricsRow.tupled((_1.get, _2, _3, _4, _5, _6, _7))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
+    def ? = (Rep.Some(id), averageresponsetime, host, queriespersecond, shard, timestamp, vertical).shaped.<>({ r => ; _1.map(_ => MmWgisMetricsRow.tupled((_1.get, _2, _3, _4, _5, _6, _7))) }, (_: Any) => throw new Exception("Inserting into ? projection not supported."))
   }
 
   /**
-    * Entity class storing rows of table Testdatax
-    *
-    * @param username Database column userName SqlType(VARCHAR), Length(20,true), Default(None)
-    * @param age      Database column age SqlType(MEDIUMTEXT), Length(16777215,true), Default(None)
+   * Entity class storing rows of table Testdatax
+   *
+   * @param username Database column userName SqlType(VARCHAR), Length(20,true), Default(None)
+   * @param age      Database column age SqlType(MEDIUMTEXT), Length(16777215,true), Default(None)
    */
   case class TestdataxRow(username: Option[String] = None, age: Option[String] = None)
 
@@ -707,14 +707,14 @@ trait Tables {
     /** Database column age SqlType(MEDIUMTEXT), Length(16777215,true), Default(None) */
     val age: Rep[Option[String]] = column[Option[String]]("age", O.Length(16777215, varying = true), O.Default(None))
 
-    def * = (username, age) <>(TestdataxRow.tupled, TestdataxRow.unapply)
+    def * = (username, age) <> (TestdataxRow.tupled, TestdataxRow.unapply)
   }
 
   /**
-    * Entity class storing rows of table Testdatax1
-    *
-    * @param username Database column userName SqlType(VARCHAR), Length(20,true), Default(None)
-    * @param age      Database column age SqlType(DOUBLE), Default(None)
+   * Entity class storing rows of table Testdatax1
+   *
+   * @param username Database column userName SqlType(VARCHAR), Length(20,true), Default(None)
+   * @param age      Database column age SqlType(DOUBLE), Default(None)
    */
   case class Testdatax1Row(username: Option[String] = None, age: Option[Double] = None)
 

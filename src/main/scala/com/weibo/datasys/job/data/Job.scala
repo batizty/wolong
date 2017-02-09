@@ -5,8 +5,8 @@ import org.apache.mesos.mesos.TaskState._
 import org.joda.time.DateTime
 
 /**
-  * Created by tuoyu on 06/02/2017.
-  */
+ * Created by tuoyu on 06/02/2017.
+ */
 trait Job {
   def jobType: JobType.Value
 
@@ -23,31 +23,31 @@ trait Job {
   def summary: String
 
   /**
-    * TODO 这里缺少一个状态，降级，针对这个状态，需要有一个策略
-    *
-    * @return
-    */
+   * TODO 这里缺少一个状态，降级，针对这个状态，需要有一个策略
+   *
+   * @return
+   */
   def canScheduler: Boolean = {
     jobStatus match {
       case JobStatus.TaskStaging |
-           JobStatus.TaskStarting |
-           JobStatus.TaskRunning => true
+        JobStatus.TaskStarting |
+        JobStatus.TaskRunning => true
       case JobStatus.TaskKilling |
-           JobStatus.TaskFinished |
-           JobStatus.TaskFailed |
-           JobStatus.TaskKilled |
-           JobStatus.TaskLost |
-           JobStatus.TaskError => false
+        JobStatus.TaskFinished |
+        JobStatus.TaskFailed |
+        JobStatus.TaskKilled |
+        JobStatus.TaskLost |
+        JobStatus.TaskError => false
     }
   }
 
   def isFinishedOrFailure: Boolean = {
     jobStatus match {
       case JobStatus.TaskFinished |
-           JobStatus.TaskFailed |
-           JobStatus.TaskKilled |
-           JobStatus.TaskLost |
-           JobStatus.TaskError => true
+        JobStatus.TaskFailed |
+        JobStatus.TaskKilled |
+        JobStatus.TaskLost |
+        JobStatus.TaskError => true
       case _ => false
     }
   }
