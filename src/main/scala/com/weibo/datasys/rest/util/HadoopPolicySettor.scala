@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory
 
 import scala.xml._
 
-
 /**
   * Created by tuoyu on 04/02/2017.
   */
@@ -39,10 +38,17 @@ object HadoopPolicySettor {
 
  <!-- Put site-specific property overrides in this file.-->"""
 
+  def main(args: Array[String]): Unit = {
+    val ss = getValidHadoopPolicyXML(List.empty, List.empty, None)
+    println(s"$ss")
+    ()
+  }
+
   def getValidHadoopPolicyXML(
                                users: List[User],
                                groups: List[Group],
-                               path: Option[String] = None): Option[String] = {
+                               path: Option[String] = None
+                             ): Option[String] = {
     val fname = path.getOrElse(default_xml)
     try {
       val stream: InputStream = getClass.getResourceAsStream("/" + fname)
@@ -54,14 +60,14 @@ object HadoopPolicySettor {
       } toMap
 
       val value = users.map(_.name).mkString(",") + " " + groups.map(_.name).mkString(",")
-      val nvmap2 = nvmap1.filterNot{ case (k, v) => k == dfs_acl } ++ Map((dfs_acl, value))
+      val nvmap2 = nvmap1.filterNot { case (k, v) => k == dfs_acl } ++ Map((dfs_acl, value))
 
       val xml2 =
         <configuration>
-          { nvmap2 map { x => updateXMLFile( x ) } }
+          {nvmap2 map { x => updateXMLFile(x) }}
         </configuration>
 
-      val p = new PrettyPrinter(80,4)
+      val p = new PrettyPrinter(80, 4)
       Some(prefix + p.format(xml2))
     } catch {
       case e: Throwable =>
@@ -73,15 +79,13 @@ object HadoopPolicySettor {
   def updateXMLFile(e: (String, String)) = {
     val (n, v) = e
     <property>
-      <name>{n}</name>
-      <value>{v}</value>
+      <name>
+        {n}
+      </name>
+      <value>
+        {v}
+      </value>
     </property>
 
-  }
-
-  def main(args: Array[String]): Unit = {
-    val ss = getValidHadoopPolicyXML(List.empty, List.empty, None)
-    println(s"$ss")
-    ()
   }
 }

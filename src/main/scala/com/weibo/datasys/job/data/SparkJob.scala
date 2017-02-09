@@ -59,8 +59,8 @@ case class SparkJob(
       Seq(Resource("cpus", Value.Type.SCALAR, Some(Value.Scalar(1.0)))),
       Left(CommandInfo(
         shell = Some(true),
-        value = Some(toCmd))
-      )
+        value = Some(toCmd)
+      ))
     )
   }
 
@@ -69,6 +69,8 @@ case class SparkJob(
   def toCmd(): String = {
     """/usr/local/spark/bin/spark-submit --class org.apache.spark.examples.SparkPi --executor-memory 10G --num-executors 4 /usr/local/spark/examples/jars/spark-examples_2.11-2.0.2.jar 10000"""
   }
+
+  def jobName: String = name
 
   def summary: String = {
     s"name: $jobName status: $jobStatus user: $jobUser submit_time: $jobSubmitTime"
@@ -79,7 +81,5 @@ case class SparkJob(
   def jobStatus: JobStatus.Value = JobStatus.apply(status.toInt)
 
   def jobUser: String = user
-
-  def jobName: String = name
 
 }

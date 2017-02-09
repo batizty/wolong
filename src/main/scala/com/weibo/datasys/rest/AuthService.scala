@@ -5,13 +5,10 @@ import akka.pattern.ask
 import akka.util.Timeout
 import com.weibo.datasys.{Path => AuthServicePath, SecondPath => AuthServiceSecondPath}
 import org.json4s._
-import org.json4s.native.JsonMethods._
 import org.json4s.native.Serialization
-import org.slf4j.LoggerFactory
 import spray.routing.HttpService
 
 import scala.concurrent.duration._
-import scala.util.{Failure, Success}
 
 /**
   * Created by tuoyu on 03/02/2017.
@@ -19,12 +16,8 @@ import scala.util.{Failure, Success}
 trait AuthService
   extends HttpService
     with Configuration {
-  implicit def executionContext = actorRefFactory.dispatcher
-
   implicit val timeout = Timeout(expiredTime seconds)
-
   val authWorker = actorRefFactory.actorOf(Props[AuthWorker], "auth-worker")
-
   val authRoute = {
     pathPrefix(AuthServicePath.AUTH / AuthServicePath.CLUSTER) {
       path(AuthServiceSecondPath.HADOOP_POLICY_XML) {
@@ -50,6 +43,8 @@ trait AuthService
     }
   }
 
+  implicit def executionContext = actorRefFactory.dispatcher
+
   def sendToWorker[T](msg: AuthMessage) = {
     complete {
       (authWorker ? msg) map { returnMsg =>
@@ -74,7 +69,8 @@ case class CheckUserValid(
                            name: String,
                            group: Option[String] = None,
                            password: Option[String] = None,
-                           token: Option[String] = None) extends AuthMessage
+                           token: Option[String] = None
+                         ) extends AuthMessage
 
 case class AuthResult(message: String = "", code: Int = 0) extends AuthMessage {
   implicit val format = Serialization.formats(NoTypeHints)

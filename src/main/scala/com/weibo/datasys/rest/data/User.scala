@@ -13,7 +13,6 @@ trait User {
   def isValid: Boolean
 }
 
-
 case class WebUser(
                     user_id: String,
                     name: String,

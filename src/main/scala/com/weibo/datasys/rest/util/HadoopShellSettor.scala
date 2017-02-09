@@ -22,7 +22,8 @@ object HadoopShellSettor {
   def getValidHadoopShell(
                            users: List[User],
                            groups: List[Group],
-                           path: Option[String] = None): Option[String] = {
+                           path: Option[String] = None
+                         ): Option[String] = {
     val fname = path.getOrElse(default_shell)
     try {
       val resourcePath = getClass.getResource("/" + fname).getPath

@@ -2,10 +2,11 @@ package com.weibo.datasys.job
 
 import akka.actor.Props
 import akka.util.Timeout
+import com.nokia.mesos.DriverFactory
 import com.nokia.mesos.api.stream.MesosEvents.TaskEvent
-import com.nokia.mesos.{DriverFactory, FrameworkFactory}
 import com.weibo.datasys.BaseActor
 import com.weibo.datasys.job.data.{Job, JobStatus, SparkJob}
+import com.weibo.datasys.job.mesos.WeiFrameworkFactory
 import com.weibo.datasys.rest.Configuration
 import org.apache.mesos.mesos.FrameworkInfo
 import org.joda.time.DateTime
@@ -44,7 +45,6 @@ object JobManager {
 
 }
 
-
 class JobManager
   extends BaseActor
     with SimpleSchedulerFIFO
@@ -60,16 +60,14 @@ class JobManager
   // TODO 后续这些机制可能会有变化
   val scheduler = context.system.scheduler
   val refresh_time_interval = 600 seconds
-
-  // private Value for Scheduler
-  private var _jobMap: Map[String, Job] = Map.empty
-
   val _mesos_framework_info = FrameworkInfo(
     name = mesos_framework_name,
-    user = mesos_default_user)
-
+    user = mesos_default_user
+  )
   val _mesos_driver = DriverFactory.createDriver(_mesos_framework_info, mesos_url)
-  val _mesos_framework = FrameworkFactory.createFramework(_mesos_driver)
+  val _mesos_framework = WeiFrameworkFactory.createFramework(_mesos_driver)
+  // private Value for Scheduler
+  private var _jobMap: Map[String, Job] = Map.empty
 
   override def preStart = {
     super.preStart()
@@ -85,7 +83,6 @@ class JobManager
         sys.exit(0)
     }
   }
-
 
   def receive = {
     case m: AddJobs => {
@@ -148,6 +145,16 @@ class JobManager
       self ! AddJobs(waitingJobList)
   }
 
+  /**
+    * show _jobMap details
+    */
+  def showJobMap: String = {
+    val ss = for {(id, task) <- _jobMap} yield {
+      s"$id -> ${task.summary}"
+    }
+    ss.mkString("\n")
+  }
+
   def reScheduleJobs() = {
     getSatisfyJob(_jobMap.map(_._2).toList) foreach { job =>
       var currentJob = job.asInstanceOf[SparkJob]
@@ -157,7 +164,8 @@ class JobManager
         log.info(s"Submit ${currentJob.summary} to MesosFrameWork ${_mesos_framework_info.name}")
         currentJob = currentJob.copy(
           mesos_task_id = task.taskId.toString,
-          status = JobStatus.TaskRunning.id.toString)
+          status = JobStatus.TaskRunning.id.toString
+        )
         self ! ChangeJobStatus(currentJob)
         launcher.events.subscribe(_ match {
           case te: TaskEvent =>
@@ -170,16 +178,6 @@ class JobManager
         })
       }
     }
-  }
-
-  /**
-    * show _jobMap details
-    */
-  def showJobMap: String = {
-    val ss = for {(id, task) <- _jobMap} yield {
-      s"$id -> ${task.summary}"
-    }
-    ss.mkString("\n")
   }
 
   /**

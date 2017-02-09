@@ -11,7 +11,6 @@ import spray.httpx.unmarshalling.FromResponseUnmarshaller
 import scala.concurrent.Future
 import scala.concurrent.duration._
 
-
 /**
   * Created by tuoyu on 04/02/2017.
   */

@@ -18,5 +18,10 @@ trait SimpleSchedulerFIFO extends Scheduler {
     jobs.filter(_.canScheduler)
       .sortBy(_.jobSubmitTime.getMillis)
       .headOption
+
+    // TODO
+    // 1 组权限检查
+    // 2 组资源检查(cpu, mem, disk)
+
   }
 }

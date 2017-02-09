@@ -23,7 +23,6 @@ class AuthWorker
     else
       (new WebUserDao(), new WebGroupDao())
 
-
   def receive = {
     case m: GetValidHadoopXML => getHadoopXML(sender)
     case m: GetValidShell => getValidShell(sender)

@@ -1,8 +1,5 @@
 package com.weibo.datasys.rest.data
 
-import java.sql.Date
-
-import org.joda.time.DateTime
 import slick.jdbc.MySQLProfile.api._
 
 /**
@@ -35,6 +32,8 @@ case class DBUser(
   */
 
 class DBUserTable(tag: Tag) extends Table[DBUser](tag, "mm_user") {
+  override def * = (id, groupId, state, name) <>((DBUser.apply _).tupled, DBUser.unapply)
+
   def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
 
   def state = column[String]("state")
@@ -42,6 +41,4 @@ class DBUserTable(tag: Tag) extends Table[DBUser](tag, "mm_user") {
   def name = column[String]("userName")
 
   def groupId = column[Long]("groupId")
-
-  override def * = (id, groupId, state, name) <>((DBUser.apply _).tupled, DBUser.unapply)
 }

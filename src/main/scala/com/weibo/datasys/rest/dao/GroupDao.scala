@@ -22,7 +22,6 @@ trait GroupDao {
   def getGroupByName(name: String): Future[Option[Group]]
 }
 
-
 class DBGroupDao
   extends GroupDao with Configuration {
 
@@ -31,7 +30,8 @@ class DBGroupDao
     url = db_url,
     user = db_user,
     password = db_passwd,
-    driver = db_driver)
+    driver = db_driver
+  )
 
   override def getAllGroup(): Future[List[DBGroup]] = {
     db.run(groups.result).map(_.toList)
@@ -59,6 +59,12 @@ class WebGroupDao
     }
   }
 
+  override def getGroupByName(name: String): Future[Option[Group]] = {
+    getAllGroup() map { gs =>
+      gs.filter(_.name == name).headOption
+    }
+  }
+
   override def getAllGroup(): Future[List[Group]] = {
     import com.weibo.datasys.util.WebClient
     WebClient.accessURL[String](web_group_url) map { ssOption =>
@@ -71,12 +77,6 @@ class WebGroupDao
             List.empty
         }
       } getOrElse List.empty
-    }
-  }
-
-  override def getGroupByName(name: String): Future[Option[Group]] = {
-    getAllGroup() map { gs =>
-      gs.filter(_.name == name).headOption
     }
   }
 

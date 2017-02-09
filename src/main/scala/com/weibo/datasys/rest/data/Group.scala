@@ -8,7 +8,6 @@ trait Group {
   def name: String
 }
 
-
 case class WebGroup(
                      group_id: String,
                      name: String,
