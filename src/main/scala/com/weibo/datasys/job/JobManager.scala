@@ -87,6 +87,7 @@ class JobManager
     case m: AddJobActor => {
       _jobActors += (m.id -> m.actor)
     }
+      log.info(s"jobActors = ${_jobActors}")
     case m: DeleteJobActor => {
       _jobActors.get(m.id) foreach { actor =>
         actor ! PoisonPill
