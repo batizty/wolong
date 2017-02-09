@@ -3,16 +3,22 @@ package com.weibo.datasys.job
 import akka.actor.{ActorRef, PoisonPill, Props}
 import akka.pattern.ask
 import akka.util.Timeout
+import com.nokia.mesos.api.async.MesosException
+import com.nokia.mesos.api.stream.MesosEvents.TaskEvent
+import com.nokia.mesos.{FrameworkFactory, DriverFactory}
 import com.weibo.datasys.BaseActor
-import com.weibo.datasys.job.data.{Job, SparkJob}
+import com.weibo.datasys.job.data.{JobStatus, Job, SparkJob}
 import com.weibo.datasys.job.mesos.MesosJobHandler
 import com.weibo.datasys.job.mesos.MesosJobHandler.{ActorInitOk, StartTask}
+import com.weibo.datasys.job.mesos.MesosSimpleHandler._
 import com.weibo.datasys.rest.Configuration
+import org.apache.mesos.mesos.FrameworkInfo
 import org.joda.time.DateTime
 import org.json4s.DefaultFormats
 import org.json4s.native.JsonMethods._
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Promise
 import scala.concurrent.duration._
 import scala.util.{Failure, Success}
 
@@ -69,11 +75,24 @@ class JobManager
   private var _jobMap: Map[String, Job] = Map.empty
   private var _jobActors: Map[String, ActorRef] = Map.empty
 
+  val fw_info = FrameworkInfo(
+    name = mesos_framework_name,
+    user = mesos_default_user)
+
+  val mk_dirver = DriverFactory.createDriver(fw_info, mesos_url)
+  val fw = FrameworkFactory.createFramework(mk_dirver)
+
   override def preStart = {
     super.preStart()
     // After Actor init, send to self to refreshJobList 1min later
-    scheduler.scheduleOnce(10 seconds, self, RefreshJobList())
+    fw.connect() foreach { case ((fwId, master, driver)) =>
+      log.info(s"init fw = $fw")
+      log.info(s" detail fwId = $fwId master = $master, driver = $driver")
+
+      scheduler.scheduleOnce(10 seconds, self, RefreshJobList())
+    }
   }
+
 
   def receive = {
     case m: AddJobs => {
@@ -147,18 +166,52 @@ class JobManager
 
   def reScheduleJobs() = {
     getSatisfyJob(_jobMap.map(_._2).toList) foreach { job =>
-      val jobActor = context.actorOf(
-        MesosJobHandler.props(job),
-        MesosJobHandler.getName(jobId = job.jobId)
-      )
-      (jobActor ? StartTask(job)) onComplete {
-        case Success(init) if init.isInstanceOf[ActorInitOk] =>
-          log.info(s"Init JobActor for Job ${job.jobId} Success")
-          self ! AddJobActor(job.jobId, jobActor)
-        case Failure(err) =>
-          logError(err, s"Init JobActor for Job ${job.jobId} Failed")
+      var cj = job.asInstanceOf[SparkJob]
+      val tinfo = cj.toTask()
+      val lauched = fw.submitTask(tinfo)
+      for {
+        task <- lauched.info
+      } {
+        log.info(s"Submit Job $job")
+        lauched.events.subscribe(_ match {
+          case te: TaskEvent =>
+            log.info(s" Task Event = $te")
+            val jobStatus: JobStatus.Value = te.state
+            cj = cj.copy(status = jobStatus.id.toString,
+              task_id = te.taskId.toString()
+            )
+            self ! AddJobs(List(cj))
+          case m =>
+            log.debug(s"problem error m = $m")
+        })
       }
     }
+    //      launched = fw.submitTask(task)
+    //      task <- launched.info
+    //    } {
+    //      log.info(s"Task successfully started on slave ${task.slaveId.value}")
+    //      val taskId = task.taskId.toString
+    //      launched.events.subscribe(_ match {
+    //        case te: TaskEvent =>
+    //          if (te.state.isTaskError)
+    //            p.failure(new MesosException(s"Task Running Error ${te.toString}"))
+    //          log.info(s" Task Event = $te")
+    //          updateTaskStatus(te.status)
+    //        case m =>
+    //          log.debug(s"Mesos Running Event Not Support Now $m")
+    //      })
+    //      val jobActor = context.actorOf(
+    //        MesosJobHandler.props(job),
+    //        MesosJobHandler.getName(jobId = job.jobId)
+    //      )
+    //      (jobActor ? StartTask(job)) onComplete {
+    //        case Success(init) if init.isInstanceOf[ActorInitOk] =>
+    //          log.info(s"Init JobActor for Job ${job.jobId} Success")
+    //          self ! AddJobActor(job.jobId, jobActor)
+    //        case Failure(err) =>
+    //          logError(err, s"Init JobActor for Job ${job.jobId} Failed")
+    //      }
+    //    }
   }
 
   /**

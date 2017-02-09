@@ -43,7 +43,6 @@ object MesosSimpleHandler
         case te: TaskEvent =>
           if (te.state.isTaskError)
             p.failure(new MesosException(s"Task Running Error ${te.toString}"))
-          log.info(s" Task Event = $te")
           updateTaskStatus(te.status)
         case m =>
           log.debug(s"Mesos Running Event Not Support Now $m")
