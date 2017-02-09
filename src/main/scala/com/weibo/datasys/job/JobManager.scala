@@ -72,16 +72,18 @@ class JobManager
   override def preStart = {
     super.preStart()
     // After Actor init, send to self to refreshJobList 1min later
-    scheduler.scheduleOnce(1 minutes, self, RefreshJobList())
+    scheduler.scheduleOnce(10 seconds, self, RefreshJobList())
   }
 
   def receive = {
     case m: AddJobs => {
       _jobMap = _jobMap ++ m.jobs.map { job => (job.jobId, job) }.toMap
     }
+      log.info(s"jobMap = ${showJobMap}")
     case m: DeleteJob => {
       _jobMap -= m.id
     }
+      log.info(s"jobMap = ${showJobMap}")
     case m: AddJobActor => {
       _jobActors += (m.id -> m.actor)
     }
@@ -124,7 +126,6 @@ class JobManager
     } onComplete {
       case Success(taskList) =>
         updateJobMap(taskList)
-        log.debug(s"After refreshJobList JobList = ${showJobMap}")
         reScheduleJobs()
       case Failure(err) =>
         logError(err, s"WebClient get newest Job List from ${web_task_url} Failed")
@@ -138,6 +139,7 @@ class JobManager
     */
   def updateJobMap(taskList: List[SparkJob]): Unit = {
     val fList = taskList.filter(_.canScheduler)
+    log.debug(s"Flist = $fList")
     if (fList.nonEmpty)
       self ! AddJobs(fList)
   }
