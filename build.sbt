@@ -54,6 +54,9 @@ libraryDependencies ++= Seq(
   , "com.typesafe.slick" %% "slick-codegen" % "3.2.0-M2"
   // -- MySql --
   , "mysql" % "mysql-connector-java" % "5.1.39"
+  // -- ScallopConf --
+  , "org.rogach" % "scallop_2.11" % "2.0.5"
+
 )
 
 /** just for testing **/

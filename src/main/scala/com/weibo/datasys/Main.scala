@@ -13,9 +13,18 @@ object Main
 
   def main(args: Array[String]): Unit = {
     implicit val system = ActorSystem(s"wolong-rest-service")
+    lazy val cmd = new ArgumentConf(args)
 
-    startJobSchedulerService()
-    //    startRestService()
+    if (cmd.help()) {
+      cmd.printHelp()
+      sys.exit(0)
+    }
+
+    if (cmd.rest_service() == true) {
+      startRestService()
+    } else if (cmd.scheduler_service() == true) {
+      startJobSchedulerService()
+    }
 
     def startRestService() = {
       val restService = system.actorOf(Props[RestServiceActor], "rest-service")

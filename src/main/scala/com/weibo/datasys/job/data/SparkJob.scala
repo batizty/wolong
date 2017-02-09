@@ -11,9 +11,9 @@ import org.joda.time.format.DateTimeFormat
 object SparkJob {
   implicit def statusToJobStatus(s: String): JobStatus.Value = {
     s match {
-      case "0" => JobStatus.SUSPENDING
-      case "1" => JobStatus.FINISHED
-      case _ => JobStatus.NOT_SUPPORT
+      case "0" => JobStatus.TaskStaging
+      case "1" => JobStatus.TaskFinished
+      case _ => JobStatus.TaskNotSupport
     }
   }
 
@@ -47,16 +47,7 @@ case class SparkJob(
 
   def Hdfs = hdfs.toLong
 
-  def jobSubmitTime = DateTime.parse(add_time, datetime_fmt)
-
-  def jobStatus: JobStatus.Value = status match {
-    case "0" => JobStatus.SUSPENDING
-    case _ => JobStatus.NOT_SUPPORT
-  }
-
   def jobType: JobType.Value = JobType.SPARK
-
-  def jobUser: String = user
 
   def jar: String = path
 
@@ -75,8 +66,6 @@ case class SparkJob(
 
   def jobId = task_id
 
-  def jobName: String = name
-
   def toCmd(): String = {
     """/usr/local/spark/bin/spark-submit --class org.apache.spark.examples.SparkPi --executor-memory 1G --num-executors  2 /usr/local/spark/examples/jars/spark-examples_2.11-2.0.2.jar 100"""
   }
@@ -84,5 +73,13 @@ case class SparkJob(
   def summary: String = {
     s"name: $jobName status: $jobStatus user: $jobUser submit_time: $jobSubmitTime"
   }
+
+  def jobSubmitTime = DateTime.parse(add_time, datetime_fmt)
+
+  def jobStatus: JobStatus.Value = JobStatus.apply(status.toInt)
+
+  def jobUser: String = user
+
+  def jobName: String = name
 
 }

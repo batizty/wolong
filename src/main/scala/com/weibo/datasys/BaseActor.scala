@@ -15,4 +15,8 @@ trait BaseActor
   override def postStop = {
     log.info("Stop Actor " + getClass.getName)
   }
+
+  def logError(err: Throwable, s: String) = {
+    log.error(err, s + s" with Error Message : ${err.getMessage}")
+  }
 }

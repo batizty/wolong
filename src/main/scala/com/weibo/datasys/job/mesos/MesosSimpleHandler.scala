@@ -5,7 +5,7 @@ import com.nokia.mesos.api.async.TaskLauncher.TaskDescriptor
 import com.nokia.mesos.api.stream.MesosEvents.TaskEvent
 import com.nokia.mesos.{DriverFactory, FrameworkFactory}
 import com.weibo.datasys.rest.Configuration
-import org.apache.mesos.mesos.{CommandInfo, FrameworkInfo, Resource, Value}
+import org.apache.mesos.mesos._
 import org.slf4j.LoggerFactory
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -18,15 +18,10 @@ object MesosSimpleHandler
   extends Configuration {
   val log = LoggerFactory.getLogger(getClass.getName)
 
-  //  def main(args: Array[String]): Unit = {
-  //    val fut = run(shellTaskDescriptor("sleep 10"))
-  //    Await.ready(fut, 20.seconds)
-  //  }
-
   def run(
            task: TaskDescriptor,
            user: Option[String] = None
-         )(onTaskSubmitted: String => Unit)(onTaskFinished: => Unit)(onTaskError: => Unit): Future[Unit] = {
+         )(updateTaskStatus: TaskStatus => Unit): Future[Unit] = {
     val fw_info = FrameworkInfo(
       name = mesos_framework_name,
       user = mesos_default_user)
@@ -41,23 +36,15 @@ object MesosSimpleHandler
       launched = fw.submitTask(task)
       task <- launched.info
     } {
-      //TODO 这里后续改成
-      // 1 一个actor对应一个任务
-      // 2 te.state和JobStatus对应
       log.info(s"Task successfully started on slave ${task.slaveId.value}")
-      onTaskSubmitted(task.taskId.toString())
+      val taskId = task.taskId.toString
       launched.events.subscribe(_ match {
-        case te: TaskEvent if te.state.isTaskFinished =>
-          onTaskFinished
-          p.success(())
-        case te: TaskEvent if (te.state.isTaskError ||
-          te.state.isTaskFailed ||
-          te.state.isTaskLost ||
-          te.state.isTaskKilled ||
-          te.state.isTaskKilling) =>
-          onTaskError
-          p.failure(new MesosException("task encountered error"))
-        case _ =>
+        case te: TaskEvent =>
+          if (te.state.isTaskError)
+            p.failure(new MesosException(s"Task Running Error ${te.toString}"))
+          updateTaskStatus(te.status)
+        case m =>
+          log.debug(s"Mesos Running Event Not Support Now $m")
       })
     }
 
