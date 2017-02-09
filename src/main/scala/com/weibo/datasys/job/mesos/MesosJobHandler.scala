@@ -3,6 +3,7 @@ package com.weibo.datasys.job.mesos
 import akka.actor.{ActorRef, Props}
 import com.weibo.datasys.BaseActor
 import com.weibo.datasys.job.data.{Job, JobStatus, SparkJob}
+import org.joda.time.DateTime
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -13,7 +14,7 @@ object MesosJobHandler {
   val Name = "MesosJobHandler"
 
   def getName(jobId: String): String = {
-    Name + "_" + jobId
+    Name + "_" + jobId + "_" + DateTime.now.getMillis
   }
 
   def props(job: Job): Props = Props(new MesosJobHandler(job))
