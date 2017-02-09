@@ -96,6 +96,7 @@ class JobManager
   def receive = {
     case m: AddJobs => {
       _jobMap = _jobMap ++ m.jobs.map { job => (job.jobId, job) }.toMap
+      reScheduleJobs()
     }
       log.info(s"jobMap = ${showJobMap}")
     case m: DeleteJob => {
@@ -145,7 +146,7 @@ class JobManager
     } onComplete {
       case Success(taskList) =>
         updateJobMap(taskList)
-        reScheduleJobs()
+//        reScheduleJobs()
       case Failure(err) =>
         logError(err, s"WebClient get newest Job List from ${web_task_url} Failed")
     }
