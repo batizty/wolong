@@ -107,11 +107,12 @@ class JobManager
   }
 
   def reportJobStatus(m: ChangeJobStatus): Unit = {
-    WebClient.accessURL[String](web_update_task_url.format(m.job.jobId, m.job.jobStatus.toString)) onComplete {
+    val url = web_update_task_url.format(m.job.jobId, m.job.jobStatus.toString)
+    WebClient.accessURL[String](url) onComplete {
       case Success(result) =>
-        log.info(s"Report Job Status to Web Front, and Result : $result")
+        log.info(s"Report Job Status to Web Front $url, and Result : $result")
       case Failure(err) =>
-        logError(err, s"Report Job ${m.job.summary} to WebFront Error")
+        logError(err, s"Report Job ${m.job.summary} to WebFront $url Error")
     }
   }
 
