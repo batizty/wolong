@@ -31,6 +31,7 @@ trait Configuration {
   lazy val web_user_url = web_url_prefix + "/" + Try(config.getString("web.user_url")).getOrElse("user")
   lazy val web_group_url = web_url_prefix + "/" + Try(config.getString("web.group_url")).getOrElse("getGroup")
   lazy val web_task_url = web_url_prefix + "/" + Try(config.getString("web.task_url")).getOrElse("getTask")
+  lazy val web_update_task_url = web_url_prefix + "/" + Try(config.getString("web.update_task_url")).getOrElse("updateTask?task_id=%s&status=%s")
   lazy val web_timeout = Try(config.getInt("web.timeout")).getOrElse(5)
   // mesos 配置
   lazy val mesos_url = Try(config.getString("mesos.master")).getOrElse("10.77.136.42:5050")

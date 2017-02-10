@@ -17,6 +17,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.util.{ Failure, Success }
 
+import com.weibo.datasys.util.WebClient
+
 /**
  * JobManager 作用
  * 1 定期从接口获得新的Job
@@ -95,18 +97,28 @@ class JobManager
       log.info(s"jobMap = ${showJobMap}")
       reScheduleJobs()
     }
-
     case m: RefreshJobList => refreshJobList()
-    case m: ChangeJobStatus => changeJobStatus(m)
+    case m: ChangeJobStatus => {
+      changeJobStatus(m)
+      reportJobStatus(m)
+    }
 
     case _ => ()
+  }
+
+  def reportJobStatus(m: ChangeJobStatus): Unit = {
+    WebClient.accessURL[String](web_update_task_url.format(m.job.jobId, m.job.jobStatus.toString)) onComplete {
+      case Success(result) =>
+        log.info(s"Report Job Status to Web Front, and Result : $result")
+      case Failure(err) =>
+        logError(err, s"Report Job ${m.job.summary} to WebFront Error")
+    }
   }
 
   /**
    * Get Job Data From Remote RestAPI and refresh _jobMap
    */
   def refreshJobList(): Unit = {
-    import com.weibo.datasys.util.WebClient
     log.info(s"RefreshJobList ${DateTime.now} and setting scheduler again")
 
     // send self to refreshJobList $refresh_time_interval min later
