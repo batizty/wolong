@@ -7,10 +7,10 @@ import slick.jdbc.MySQLProfile.api._
  */
 
 case class DBUser(
-  id: Long,
-  groupId: Long,
-  state: String,
-  name: String
+    id: Long,
+    groupId: Long,
+    state: String,
+    name: String
 ) extends User {
   val ACTIVED_FLAG = "actived"
   override def isValid: Boolean = state == ACTIVED_FLAG

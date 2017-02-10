@@ -1,6 +1,6 @@
 package com.weibo.datasys.rest.util
 
-import com.weibo.datasys.rest.data.{DBGroup, DBUser, Group, User}
+import com.weibo.datasys.rest.data.{ DBGroup, DBUser, Group, User }
 import org.slf4j.LoggerFactory
 
 import scala.io.Source

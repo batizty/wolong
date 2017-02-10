@@ -3,7 +3,7 @@ package com.weibo.datasys.rest
 import akka.actor.ActorRef
 import com.weibo.datasys.BaseActor
 import com.weibo.datasys.rest.dao._
-import com.weibo.datasys.rest.data.{Group, User}
+import com.weibo.datasys.rest.data.{ Group, User }
 
 import scala.concurrent.Future
 
@@ -12,8 +12,8 @@ import scala.concurrent.Future
  */
 
 class AuthWorker
-  extends BaseActor
-  with Configuration {
+    extends BaseActor
+    with Configuration {
 
   import scala.concurrent.ExecutionContext.Implicits.global
 

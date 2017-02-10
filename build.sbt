@@ -52,12 +52,17 @@ libraryDependencies ++= Seq(
   // -- Slick --
   , "com.typesafe.slick" %% "slick" % "3.2.0-M2"
   , "com.typesafe.slick" %% "slick-codegen" % "3.2.0-M2"
+
+  ,"com.typesafe.scala-logging" %% "scala-logging" % "3.4.0"
+
   // -- MySql --
   , "mysql" % "mysql-connector-java" % "5.1.39"
   // -- ScallopConf --
   , "org.rogach" % "scallop_2.11" % "2.0.5"
 
 )
+
+unmanagedBase := baseDirectory.value / "custom_lib"
 
 /** just for testing **/
 libraryDependencies += "com.nokia" %% "mesos-scala-api" % "0.4.0"

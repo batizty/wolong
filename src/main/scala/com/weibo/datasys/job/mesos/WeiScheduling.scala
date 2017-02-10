@@ -2,8 +2,8 @@ package com.weibo.datasys.job.mesos
 
 import com.nokia.mesos.api.async.Scheduling
 import com.nokia.mesos.api.async.TaskLauncher._
-import com.nokia.mesos.impl.launcher.TaskAllocator
-import org.apache.mesos.mesos.{Offer, OfferID}
+import com.nokia.mesos.impl.launcher.WeiTaskAllocator
+import org.apache.mesos.mesos.{ Offer, OfferID }
 
 import scala.collection.concurrent
 import scala.concurrent.Future
@@ -11,7 +11,7 @@ import scala.concurrent.Future
 /**
  * Created by tuoyu on 09/02/2017.
  */
-class WeiScheduling extends Scheduling with TaskAllocator {
+class WeiScheduling extends Scheduling with WeiTaskAllocator {
 
   private[this] val currentOffers = new concurrent.TrieMap[OfferID, Offer]
 

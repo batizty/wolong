@@ -7,8 +7,8 @@ import com.weibo.datasys.rest.AuthService
  */
 
 class RestServiceActor
-  extends BaseActor
-  with AuthService {
+    extends BaseActor
+    with AuthService {
 
   def actorRefFactory = context
 

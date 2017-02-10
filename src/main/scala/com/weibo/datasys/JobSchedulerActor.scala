@@ -10,7 +10,7 @@ import com.weibo.datasys.job.JobManager
  * Created by tuoyu on 06/02/2017.
  */
 class JobSchedulerActor
-  extends BaseActor {
+    extends BaseActor {
 
   val jobManager = actorRefFactory.actorOf(JobManager.props(), JobManager.Name)
 
