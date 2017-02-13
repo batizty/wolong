@@ -12,7 +12,7 @@ object Main
     extends Configuration {
 
   def main(args: Array[String]): Unit = {
-    implicit val system = ActorSystem(s"wolong-rest-service")
+    implicit val system = ActorSystem(s"wolong")
     lazy val cmd = new ArgumentConf(args)
 
     if (cmd.help()) {
@@ -27,12 +27,12 @@ object Main
     }
 
     def startRestService() = {
-      val restService = system.actorOf(Props[RestServiceActor], "rest-service")
+      val restService = system.actorOf(RestServiceActor.props(), RestServiceActor.Name)
       IO(Http) ! Http.Bind(restService, host, port)
     }
 
     def startJobSchedulerService() = {
-      system.actorOf(Props[JobSchedulerActor], "scheduler-service")
+      system.actorOf(JobSchedulerActor.props(), JobSchedulerActor.Name)
     }
   }
 }

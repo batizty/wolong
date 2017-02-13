@@ -1,5 +1,6 @@
 package com.weibo.datasys
 
+import akka.actor.Props
 import com.weibo.datasys.job.JobManager
 
 /**
@@ -9,6 +10,11 @@ import com.weibo.datasys.job.JobManager
  * 2 对JobManager进行监控，在JobManager出现失败的时候，进行错误恢复
  * Created by tuoyu on 06/02/2017.
  */
+object JobSchedulerActor {
+  val Name = "job-scheduler"
+  def props(): Props = Props(new JobSchedulerActor())
+}
+
 class JobSchedulerActor
     extends BaseActor {
 

@@ -18,12 +18,13 @@ class AuthWorker
   import scala.concurrent.ExecutionContext.Implicits.global
 
   private val (userDao: UserDao, groupDao: GroupDao) =
-    if (source == Configuration.DATA_SOURCE_DB)
+    if (source == Configuration.DATA_SOURCE_DB) {
       (new DBUserDao(), new DBGroupDao())
-    else
+    } else {
       (new WebUserDao(), new WebGroupDao())
+    }
 
-  def receive = {
+  def receive: Receive = {
     case m: GetValidHadoopXML => getHadoopXML(sender)
     case m: GetValidShell => getValidShell(sender)
     case m: CheckUserValid => checkUserValid(sender, m)
@@ -55,21 +56,24 @@ class AuthWorker
     groupFlag: Boolean = false
   )(f: (List[User], List[Group]) => Unit): Unit = {
     val users =
-      if (userFlag)
+      if (userFlag) {
         userDao.getAllUser()
-      else
+      } else {
         Future(List.empty)
+      }
+
     val groups =
-      if (groupFlag)
+      if (groupFlag) {
         groupDao.getAllGroup()
-      else
+      } else {
         Future(List.empty)
+      }
 
     for {
       us <- users
       gs <- groups
     } {
-      if (false == ((userFlag && us.isEmpty) || (groupFlag && gs.isEmpty))) {
+      if (!((userFlag && us.isEmpty) || (groupFlag && gs.isEmpty))) {
         f(us, gs)
       }
     }

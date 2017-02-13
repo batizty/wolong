@@ -1,6 +1,8 @@
 package com.weibo.datasys.job
 
-import akka.actor.{Actor, Props}
+import akka.actor.{ Actor, Props }
+import akka.cluster.Cluster
+import akka.cluster.ClusterEvent.{ MemberEvent, MemberUp, UnreachableMember, InitialStateAsEvents }
 import akka.util.Timeout
 import com.nokia.mesos.DriverFactory
 import com.nokia.mesos.api.stream.MesosEvents.TaskEvent
@@ -71,19 +73,37 @@ class JobManager
   // private Value for Scheduler
   private var _jobMap: Map[String, Job] = Map.empty
 
+  val cluster: Cluster = Cluster(context.system)
+
   override def preStart(): Unit = {
     super.preStart()
 
     // Init mesos FrameWork
     _mesos_framework.connect() onComplete {
       case Success((fwId, master, driver)) =>
-        log.info("init fw = " + _mesos_framework)
-        log.info(" detail fwId = " + fwId + ", master = " + master + ", driver = " + driver)
+        log.info("Init Mesos Frame Work " + _mesos_framework)
+        log.info("Detail Frame Work  Id = " + fwId + ", Master = " + master + ", Driver = " + driver)
         scheduler.scheduleOnce(60 seconds, self, RefreshJobList())
       case Failure(err) =>
-        logError(err, s"Init Mesos FrameWork failed")
+        logError(err, s"Init Mesos FrameWork Failed")
         sys.exit(0)
     }
+
+    // Init Cluster
+    cluster.subscribe(
+      self,
+      initialStateMode = InitialStateAsEvents,
+      classOf[MemberUp],
+      classOf[UnreachableMember],
+      classOf[MemberEvent]
+    )
+  }
+
+  override def postStop(): Unit = {
+    // Stop Cluster
+    cluster.unsubscribe(self)
+
+    super.postStop()
   }
 
   def receive: Actor.Receive = {
@@ -187,8 +207,6 @@ class JobManager
             currentJob = currentJob.copy(status = jobStatus.id.toString)
             log.info("Job " + currentJob.jobId + "Status Change To " + currentJob.jobStatus)
             self ! ChangeJobStatus(currentJob)
-          case m: Any =>
-            log.error("Not Recognize Event " + m.toString)
         })
       }
     }

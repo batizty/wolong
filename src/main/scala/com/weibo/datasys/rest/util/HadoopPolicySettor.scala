@@ -15,7 +15,8 @@ object HadoopPolicySettor {
 
   val dfs_acl = "security.client.protocol.acl"
   val default_xml = "hadoop-policy.xml"
-  val prefix = """<?xml version="1.0"?>
+  val prefix =
+    """<?xml version="1.0"?>
   <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
   <!--
 
@@ -38,11 +39,12 @@ object HadoopPolicySettor {
 
  <!-- Put site-specific property overrides in this file.-->"""
 
-  def main(args: Array[String]): Unit = {
-    val ss = getValidHadoopPolicyXML(List.empty, List.empty, None)
-    println(s"$ss")
-    ()
-  }
+  /** This Main is Just For Testing **/
+  //  def main(args: Array[String]): Unit = {
+  //    val ss = getValidHadoopPolicyXML(List.empty, List.empty, None)
+  //    println(s"$ss")
+  //    ()
+  //  }
 
   def getValidHadoopPolicyXML(
     users: List[User],
@@ -59,15 +61,23 @@ object HadoopPolicySettor {
         (n, v)
       } toMap
 
-      val value = users.map(_.name).mkString(",") + " " + groups.map(_.name).mkString(",")
-      val nvmap2 = nvmap1.filterNot { case (k, v) => k == dfs_acl } ++ Map((dfs_acl, value))
+      val value = users.map(_.name.trim).mkString(",") +
+        " " +
+        groups.map(_.name.trim).mkString(",")
+
+      val nvmap2 = nvmap1.filterNot {
+        case (k, v) =>
+          k == dfs_acl
+      } ++ Map((dfs_acl, value))
 
       val xml2 =
         <configuration>
           { nvmap2 map { x => updateXMLFile(x) } }
         </configuration>
 
-      val p = new PrettyPrinter(80, 4)
+      val xmlWidth = 160
+      val xmlStep = 4
+      val p = new PrettyPrinter(xmlWidth, xmlStep)
       Some(prefix + p.format(xml2))
     } catch {
       case e: Throwable =>
