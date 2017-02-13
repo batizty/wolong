@@ -62,8 +62,6 @@ trait WeiTaskAllocator extends LazyLogging {
     case Nil =>
       true
     case task :: rest =>
-      // TODO 这里如果是SparkJob，那么就应该解出来
-      // Task.name = $job_id^$job_name^$job_json
       import org.json4s.DefaultFormats
       import org.json4s.native.JsonMethods._
       implicit val formats = DefaultFormats
@@ -75,7 +73,6 @@ trait WeiTaskAllocator extends LazyLogging {
       } getOrElse (task.resources)
 
       ResourceProcessor.remainderOf(rs, resources) match {
-        //      ResourceProcessor.remainderOf(rs, task.resources) match {
         case Some(remainder) => trySimpleAllocation(remainder, rest)
         case None => false
       }

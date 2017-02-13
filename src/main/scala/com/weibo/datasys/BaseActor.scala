@@ -8,15 +8,15 @@ import akka.actor.{ Actor, ActorLogging }
 trait BaseActor
     extends Actor
     with ActorLogging {
-  override def preStart = {
+  override def preStart(): Unit = {
     log.info("Start Acotr " + getClass.getName)
   }
 
-  override def postStop = {
+  override def postStop(): Unit = {
     log.info("Stop Actor " + getClass.getName)
   }
 
-  def logError(err: Throwable, s: String) = {
+  def logError(err: Throwable, s: String): Unit = {
     log.error(err, s + s" with Error Message : ${err.getMessage}")
   }
 }

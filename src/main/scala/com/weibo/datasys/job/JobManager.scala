@@ -1,6 +1,6 @@
 package com.weibo.datasys.job
 
-import akka.actor.Props
+import akka.actor.{Actor, Props}
 import akka.util.Timeout
 import com.nokia.mesos.DriverFactory
 import com.nokia.mesos.api.stream.MesosEvents.TaskEvent
@@ -71,14 +71,14 @@ class JobManager
   // private Value for Scheduler
   private var _jobMap: Map[String, Job] = Map.empty
 
-  override def preStart = {
+  override def preStart(): Unit = {
     super.preStart()
 
     // Init mesos FrameWork
     _mesos_framework.connect() onComplete {
       case Success((fwId, master, driver)) =>
-        log.info(s"init fw = ${_mesos_framework}")
-        log.info(s" detail fwId = $fwId master = $master, driver = $driver")
+        log.info("init fw = " + _mesos_framework)
+        log.info(" detail fwId = " + fwId + ", master = " + master + ", driver = " + driver)
         scheduler.scheduleOnce(60 seconds, self, RefreshJobList())
       case Failure(err) =>
         logError(err, s"Init Mesos FrameWork failed")
@@ -86,15 +86,15 @@ class JobManager
     }
   }
 
-  def receive = {
+  def receive: Actor.Receive = {
     case m: AddJobs => {
       _jobMap = _jobMap ++ m.jobs.map { job => (job.jobId, job) }.toMap
-      log.info(s"jobMap = ${showJobMap}")
+      log.debug("jobMap = " + showJobMap)
       reScheduleJobs()
     }
     case m: DeleteJob => {
       _jobMap -= m.id
-      log.info(s"jobMap = ${showJobMap}")
+      log.debug("jobMap = " + showJobMap)
       reScheduleJobs()
     }
     case m: RefreshJobList => refreshJobList()
@@ -110,9 +110,9 @@ class JobManager
     val url = web_update_task_url.format(m.job.jobId, m.job.jobStatus.toString)
     WebClient.accessURL[String](url) onComplete {
       case Success(result) =>
-        log.info(s"Report Job Status to Web Front $url, and Result : $result")
+        log.info("Report Job Status to Web Front " + url + ", and Result : " + result)
       case Failure(err) =>
-        logError(err, s"Report Job ${m.job.summary} to WebFront $url Error")
+        logError(err, "Report Job " + m.job.summary + " to WebFront " + url + " Error")
     }
   }
 
@@ -125,10 +125,10 @@ class JobManager
     // send self to refreshJobList $refresh_time_interval min later
     scheduler.scheduleOnce(refresh_time_interval, self, RefreshJobList())
 
-    log.debug(s"Before refreshJobList JobList = ${showJobMap}")
+    log.debug("Before refreshJobList JobList = " + showJobMap)
 
     WebClient.accessURL[String](web_task_url) map { ssOption =>
-      log.debug(s"WebClient get newest Job List from ${web_task_url} with result ${ssOption}")
+      log.debug("WebClient get newest Job List from " + web_task_url + " with result " + ssOption)
       ssOption map { ss =>
         try {
           parse(ss).extract[XX].data
@@ -153,9 +153,10 @@ class JobManager
    */
   def updateJobMap(taskList: List[SparkJob]): Unit = {
     val waitingJobList = taskList.filter(_.canScheduler)
-    log.debug(s"Waiting Job List = ${waitingJobList.mkString("\n")}")
-    if (waitingJobList.nonEmpty)
+    log.debug("Waiting Job List = " + waitingJobList.mkString("\n"))
+    if (waitingJobList.nonEmpty) {
       self ! AddJobs(waitingJobList)
+    }
   }
 
   /**
@@ -163,31 +164,31 @@ class JobManager
    */
   def showJobMap: String = {
     val ss = for { (id, task) <- _jobMap } yield {
-      s"$id -> ${task.summary}"
+      id + " -> " + task.summary
     }
     ss.mkString("\n")
   }
 
-  def reScheduleJobs() = {
+  def reScheduleJobs(): Unit = {
     getSatisfyJob(_jobMap.map(_._2).toList) foreach { job =>
       var currentJob = job.asInstanceOf[SparkJob]
       val task = currentJob.toTask()
       val launcher = _mesos_framework.submitTask(task)
       for { task <- launcher.info } {
-        log.info(s"Submit ${currentJob.summary} to MesosFrameWork ${_mesos_framework_info.name}")
+        log.info("Submit " + currentJob.summary + "to MesosFrameWork " + _mesos_framework_info.name)
         currentJob = currentJob.copy(
           mesos_task_id = task.taskId.toString,
           status = JobStatus.TaskRunning.id.toString
         )
         self ! ChangeJobStatus(currentJob)
-        launcher.events.subscribe(_ match {
+        launcher.events.subscribe(taskEvent => taskEvent match {
           case te: TaskEvent =>
-            log.info(s"Job ${currentJob.jobId} Status Change To ${te.status}")
             val jobStatus: JobStatus.Value = te.state
             currentJob = currentJob.copy(status = jobStatus.id.toString)
+            log.info("Job " + currentJob.jobId + "Status Change To " + currentJob.jobStatus)
             self ! ChangeJobStatus(currentJob)
-          case m =>
-            log.error(s"Not Recognize Event $m")
+          case m: Any =>
+            log.error("Not Recognize Event " + m.toString)
         })
       }
     }
@@ -200,11 +201,10 @@ class JobManager
    */
   def changeJobStatus(msg: ChangeJobStatus): Unit = synchronized {
     val job = msg.job
-    log.info(s"Change Job ${job.jobId} Status To ${job.jobStatus}")
+    log.info("Change Job " + job.jobId + " Status To " + job.jobStatus)
     // TODO report to FrontEnd Web
     if (job.isFinishedOrFailure) {
       self ! DeleteJob(job.jobId)
-      //      self ! DeleteJobActor(job.jobId)
     } else {
       _jobMap.updated(job.jobId, job)
     }
