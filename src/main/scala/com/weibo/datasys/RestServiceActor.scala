@@ -19,5 +19,10 @@ class RestServiceActor
 
   def actorRefFactory: ActorContext = context
 
-  def receive: Receive = runRoute(authRoute)
+  def remotePath =
+
+  def receive: Receive = runRoute(authRoute) orElse {
+    case m: Any =>
+      log.error("UnSupport Message " + m.toString)
+  }
 }
