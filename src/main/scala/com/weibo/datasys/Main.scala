@@ -12,7 +12,7 @@ object Main
     extends Configuration {
 
   def main(args: Array[String]): Unit = {
-    implicit val system = ActorSystem(cluster_name)
+    implicit val system = ActorSystem(cluster_name, config)
     lazy val cmd = new ArgumentConf(args)
 
     if (cmd.help()) {
