@@ -29,17 +29,19 @@ object Main
     }
 
     def startRestService() = {
-//      val configFile = getClass.getClassLoader.getResource("rest.conf").getFile
-//      val config = ConfigFactory.parseFile(new File(configFile))
-      implicit val system = ActorSystem(cluster_name, config)
+      implicit val system = ActorSystem(
+        cluster_name,
+        config.getConfig("rest-service").withFallback(config)
+      )
       val restService = system.actorOf(Props[RestServiceActor], RestServiceActor.Name)
       IO(Http) ! Http.Bind(restService, host, port)
     }
 
     def startJobSchedulerService() = {
-//      val configFile = getClass.getClassLoader.getResource("scheduler.conf").getFile
-//      val config = ConfigFactory.parseFile(new File(configFile))
-      implicit val system = ActorSystem(cluster_name, config)
+      implicit val system = ActorSystem(
+        cluster_name,
+        config.getConfig("scheduler-service").withFallback(config)
+      )
       system.actorOf(JobSchedulerActor.props(), JobSchedulerActor.Name)
     }
   }
