@@ -1,15 +1,16 @@
 package com.weibo.datasys.job
 
-import akka.actor.{ Actor, Props }
+import akka.actor.{Actor, Props}
 import akka.cluster.Cluster
-import akka.cluster.ClusterEvent.{ MemberEvent, MemberUp, UnreachableMember, InitialStateAsEvents }
+import akka.cluster.ClusterEvent.{InitialStateAsEvents, MemberEvent, MemberUp, UnreachableMember}
 import akka.util.Timeout
 import com.nokia.mesos.DriverFactory
 import com.nokia.mesos.api.stream.MesosEvents.TaskEvent
 import com.weibo.datasys.BaseActor
-import com.weibo.datasys.job.data.{ Job, JobStatus, SparkJob }
+import com.weibo.datasys.job.data.{Job, JobStatus, SparkJob}
 import com.weibo.datasys.job.mesos.WeiFrameworkFactory
 import com.weibo.datasys.rest.Configuration
+import com.weibo.datasys.util.WebClient
 import org.apache.mesos.mesos.FrameworkInfo
 import org.joda.time.DateTime
 import org.json4s.DefaultFormats
@@ -17,9 +18,7 @@ import org.json4s.native.JsonMethods._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
-import scala.util.{ Failure, Success }
-
-import com.weibo.datasys.util.WebClient
+import scala.util.{Failure, Success}
 
 /**
  * JobManager 作用
@@ -61,7 +60,6 @@ class JobManager
   implicit val formats = DefaultFormats
   implicit val timeout: Timeout = 10 seconds
 
-  // TODO 后续这些机制可能会有变化
   val scheduler = context.system.scheduler
   val refresh_time_interval = 600 seconds
   val _mesos_framework_info = FrameworkInfo(
@@ -127,7 +125,7 @@ class JobManager
   }
 
   def reportJobStatus(m: ChangeJobStatus): Unit = {
-    val url = web_update_task_url.format(m.job.jobId, m.job.jobStatus.toString)
+    val url = web_update_task_url.format(m.job.jobId, m.job.jobStatus.id)
     WebClient.accessURL[String](url) onComplete {
       case Success(result) =>
         log.info("Report Job Status to Web Front " + url + ", and Result : " + result)
@@ -220,7 +218,6 @@ class JobManager
   def changeJobStatus(msg: ChangeJobStatus): Unit = synchronized {
     val job = msg.job
     log.info("Change Job " + job.jobId + " Status To " + job.jobStatus)
-    // TODO report to FrontEnd Web
     if (job.isFinishedOrFailure) {
       self ! DeleteJob(job.jobId)
     } else {
