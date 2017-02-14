@@ -10,15 +10,15 @@ import org.joda.time.DateTime
 trait Job {
   def jobType: JobType.Value
 
+  def jobId: String
+
   def jobName: String
 
-  def jobUser: String
+  def jobUserId: String
 
-  def jobSubmitTime: DateTime
+  def jobAddTime: DateTime
 
   def jobStatus: JobStatus.Value
-
-  def jobId: String
 
   def summary: String
 

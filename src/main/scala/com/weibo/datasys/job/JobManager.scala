@@ -1,13 +1,13 @@
 package com.weibo.datasys.job
 
-import akka.actor.{Actor, Props}
+import akka.actor.{ Actor, Props }
 import akka.cluster.Cluster
-import akka.cluster.ClusterEvent.{InitialStateAsEvents, MemberEvent, MemberUp, UnreachableMember}
+import akka.cluster.ClusterEvent.{ InitialStateAsEvents, MemberEvent, MemberUp, UnreachableMember }
 import akka.util.Timeout
 import com.nokia.mesos.DriverFactory
 import com.nokia.mesos.api.stream.MesosEvents.TaskEvent
 import com.weibo.datasys.BaseActor
-import com.weibo.datasys.job.data.{Job, JobStatus, SparkJob}
+import com.weibo.datasys.job.data.{ Job, JobStatus, SparkJob }
 import com.weibo.datasys.job.mesos.WeiFrameworkFactory
 import com.weibo.datasys.rest.Configuration
 import com.weibo.datasys.util.WebClient
@@ -18,7 +18,7 @@ import org.json4s.native.JsonMethods._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
-import scala.util.{Failure, Success}
+import scala.util.{ Failure, Success }
 
 /**
  * JobManager 作用
