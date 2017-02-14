@@ -39,6 +39,8 @@ libraryDependencies ++= Seq(
   , "com.typesafe.akka" %% "akka-actor" % akkaVersion
   , "com.typesafe.akka" %% "akka-slf4j" % akkaVersion
   , "com.typesafe.akka" %% "akka-cluster" % akkaVersion
+  , "com.typesafe.akka" %% "akka-remote" % akkaVersion
+
   // -- Spray --
   , "io.spray" %% "spray-routing" % sprayVersion
   , "io.spray" %% "spray-can" % sprayVersion
@@ -53,7 +55,7 @@ libraryDependencies ++= Seq(
   , "com.typesafe.slick" %% "slick" % "3.2.0-M2"
   , "com.typesafe.slick" %% "slick-codegen" % "3.2.0-M2"
 
-  ,"com.typesafe.scala-logging" %% "scala-logging" % "3.4.0"
+  , "com.typesafe.scala-logging" %% "scala-logging" % "3.4.0"
 
   // -- MySql --
   , "mysql" % "mysql-connector-java" % "5.1.39"

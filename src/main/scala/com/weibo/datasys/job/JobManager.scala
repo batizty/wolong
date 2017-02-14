@@ -4,11 +4,11 @@ import akka.actor.{ Actor, Props }
 import akka.util.Timeout
 import com.nokia.mesos.DriverFactory
 import com.nokia.mesos.api.stream.MesosEvents.TaskEvent
-import com.weibo.datasys.BaseActor
 import com.weibo.datasys.job.data.{ Job, JobStatus, SparkJob }
 import com.weibo.datasys.job.mesos.WeiFrameworkFactory
 import com.weibo.datasys.rest.Configuration
 import com.weibo.datasys.util.WebClient
+import com.weibo.datasys.{ RestServiceActor, BaseActor, JobSchedulerActor }
 import org.apache.mesos.mesos.FrameworkInfo
 import org.joda.time.DateTime
 import org.json4s.DefaultFormats
@@ -66,39 +66,38 @@ class JobManager
   )
   val _mesos_driver = DriverFactory.createDriver(_mesos_framework_info, mesos_url)
   val _mesos_framework = WeiFrameworkFactory.createFramework(_mesos_driver)
+
+  val _auth_actor = context.actorSelection(
+    "akka.tcp://"
+      + cluster_name + "@10.212.250.102:2552/user/"
+      + RestServiceActor.Name
+  )
+
   // private Value for Scheduler
   private var _jobMap: Map[String, Job] = Map.empty
 
-  //  val cluster: Cluster = Cluster(context.system)
-
   override def preStart(): Unit = {
     super.preStart()
+
+    val _first_fresh_time_interval = 60 seconds
 
     // Init mesos FrameWork
     _mesos_framework.connect() onComplete {
       case Success((fwId, master, driver)) =>
         log.info("Init Mesos Frame Work " + _mesos_framework)
         log.info("Detail Frame Work  Id = " + fwId + ", Master = " + master + ", Driver = " + driver)
-        scheduler.scheduleOnce(60 seconds, self, RefreshJobList())
+        scheduler.scheduleOnce(
+          _first_fresh_time_interval,
+          self,
+          RefreshJobList()
+        )
       case Failure(err) =>
         logError(err, s"Init Mesos FrameWork Failed")
         sys.exit(0)
     }
-
-    // Init Cluster
-    //    cluster.subscribe(
-    //      self,
-    //      initialStateMode = InitialStateAsEvents,
-    //      classOf[MemberUp],
-    //      classOf[UnreachableMember],
-    //      classOf[MemberEvent]
-    //    )
   }
 
   override def postStop(): Unit = {
-    // Stop Cluster
-    //    cluster.unsubscribe(self)
-
     super.postStop()
   }
 
@@ -119,7 +118,9 @@ class JobManager
       reportJobStatus(m)
     }
 
-    case _ => ()
+    case m: Any =>
+      log.error("Not Support Message :" + m.toString + " From Actor " + sender().toString())
+      sender() ! m.toString
   }
 
   def reportJobStatus(m: ChangeJobStatus): Unit = {
