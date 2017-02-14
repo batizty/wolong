@@ -16,7 +16,7 @@ trait SimpleSchedulerFIFO extends Scheduler {
     resources: List[Resource] = List.empty
   ): Option[Job] = {
     jobs.filter(_.canScheduler)
-      .sortBy(_.jobSubmitTime.getMillis)
+      .sortBy(_.jobAddTime.getMillis)
       .headOption
 
     // TODO
