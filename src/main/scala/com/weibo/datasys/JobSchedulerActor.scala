@@ -23,6 +23,8 @@ class JobSchedulerActor
   def actorRefFactory: ActorContext = context
 
   def receive: Receive = {
-    case msg: Any => log.error("UnRecognize Message" + msg.toString)
+    case msg: Any =>
+      log.error("UnRecognize Message" + msg.toString)
+      sender() ! "Hello"
   }
 }
