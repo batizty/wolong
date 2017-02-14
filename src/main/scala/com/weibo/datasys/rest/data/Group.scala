@@ -9,13 +9,13 @@ trait Group {
 }
 
 case class WebGroup(
-    group_id: String,
-    name: String,
-    core: String,
-    mem: String,
-    executor: String,
-    hdfs: String,
-    add_time: String
+  group_id: String,
+  name: String,
+  core: String,
+  mem: String,
+  executor: String,
+  hdfs: String,
+  add_time: String
 ) extends Group {
   def id = group_id.toLong
 }

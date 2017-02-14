@@ -1,6 +1,6 @@
 package com.weibo.datasys
 
-import akka.actor.{ ActorContext, Props }
+import akka.actor.{ActorContext, Props}
 import com.weibo.datasys.RestServiceActor.SayHello
 import com.weibo.datasys.job.JobManager
 import com.weibo.datasys.rest.AuthService
@@ -21,8 +21,8 @@ object RestServiceActor {
 }
 
 class RestServiceActor
-    extends BaseActor
-    with AuthService {
+  extends BaseActor
+  with AuthService {
 
   def actorRefFactory: ActorContext = context
 

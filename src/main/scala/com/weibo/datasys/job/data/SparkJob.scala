@@ -5,7 +5,7 @@ import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import org.json4s.NoTypeHints
 import org.json4s.native.Serialization
-import org.apache.mesos.mesos.{ CommandInfo, Resource, Value }
+import org.apache.mesos.mesos.{CommandInfo, Resource, Value}
 
 /**
  * Created by tuoyu on 06/02/2017.
@@ -17,21 +17,21 @@ object SparkJob {
 }
 
 case class SparkJob2(
-    id: String,
-    name: String,
-    user_id: String,
-    add_time: String,
-    status: Int,
-    user_class: String,
-    user_jars: String,
-    driver_memory: Option[Int] = None,
-    executor_memory: Option[Int] = None,
-    total_executor_cores: Option[Int] = None,
-    confs: String,
-    arguments: Option[String] = None,
-    mesos_task_id: Option[String] = None,
-    mesos_memory_usage: Option[Int] = None,
-    mesos_core_usage: Option[Int] = None
+  id: String,
+  name: String,
+  user_id: String,
+  add_time: String,
+  status: Int,
+  user_class: String,
+  user_jars: String,
+  driver_memory: Option[Int] = None,
+  executor_memory: Option[Int] = None,
+  total_executor_cores: Option[Int] = None,
+  confs: String,
+  arguments: Option[String] = None,
+  mesos_task_id: Option[String] = None,
+  mesos_memory_usage: Option[Int] = None,
+  mesos_core_usage: Option[Int] = None
 ) extends Job {
 
   import SparkJob._
@@ -126,17 +126,17 @@ case class SparkJob2(
 }
 
 case class SparkJob(
-    task_id: String,
-    name: String,
-    core: String,
-    mem: String,
-    executor: String,
-    hdfs: String,
-    add_time: String,
-    status: String,
-    path: String,
-    user: String,
-    mesos_task_id: String = ""
+  task_id: String,
+  name: String,
+  core: String,
+  mem: String,
+  executor: String,
+  hdfs: String,
+  add_time: String,
+  status: String,
+  path: String,
+  user: String,
+  mesos_task_id: String = ""
 ) extends Job {
 
   import SparkJob._

@@ -23,7 +23,7 @@ trait GroupDao {
 }
 
 class DBGroupDao
-    extends GroupDao with Configuration {
+  extends GroupDao with Configuration {
 
   val groups = TableQuery[DBGroupTable]
   private val db = Database.forURL(
@@ -48,8 +48,8 @@ class DBGroupDao
 }
 
 class WebGroupDao
-    extends GroupDao
-    with Configuration {
+  extends GroupDao
+  with Configuration {
   val log = LoggerFactory.getLogger(getClass.getName)
   implicit val formats = DefaultFormats
 

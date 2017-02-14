@@ -2,7 +2,7 @@ package com.weibo.datasys.rest.util
 
 import java.io.InputStream
 
-import com.weibo.datasys.rest.data.{ Group, User }
+import com.weibo.datasys.rest.data.{Group, User}
 import org.slf4j.LoggerFactory
 
 import scala.xml._

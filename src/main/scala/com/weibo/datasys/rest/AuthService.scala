@@ -3,11 +3,11 @@ package com.weibo.datasys.rest
 import akka.actor.Props
 import akka.pattern.ask
 import akka.util.Timeout
-import com.weibo.datasys.{ Path => AuthServicePath, SecondPath => AuthServiceSecondPath }
+import com.weibo.datasys.{Path => AuthServicePath, SecondPath => AuthServiceSecondPath}
 import org.json4s._
 import org.json4s.native.Serialization
 import spray.httpx.marshalling.ToResponseMarshallable
-import spray.routing.{ StandardRoute, HttpService }
+import spray.routing.{StandardRoute, HttpService}
 
 import scala.concurrent.ExecutionContextExecutor
 import scala.concurrent.duration._
@@ -16,8 +16,8 @@ import scala.concurrent.duration._
  * Created by tuoyu on 03/02/2017.
  */
 trait AuthService
-    extends HttpService
-    with Configuration {
+  extends HttpService
+  with Configuration {
   implicit val timeout = Timeout(expiredTime seconds)
   val authWorker = actorRefFactory.actorOf(Props[AuthWorker], "auth-worker")
   val authRoute = {
