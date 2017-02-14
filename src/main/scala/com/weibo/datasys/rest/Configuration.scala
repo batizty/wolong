@@ -11,6 +11,8 @@ trait Configuration {
 
   import Configuration._
 
+  lazy val cluster_name = Try(config.getString("cluster.name")).getOrElse("wolong")
+
   // RestService配置
   lazy val host = Try(config.getString("service.host")).getOrElse("localhost")
   lazy val port = Try(config.getInt("service.port")).getOrElse(8080)
