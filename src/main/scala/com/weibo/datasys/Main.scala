@@ -2,17 +2,17 @@ package com.weibo.datasys
 
 import java.io.File
 
-import akka.actor.{ActorSystem, Props}
+import akka.actor.{ ActorSystem, Props }
 import akka.io.IO
 import com.weibo.datasys.rest.Configuration
 import spray.can.Http
 import com.typesafe.config.ConfigFactory
 
 /**
-  * Created by tuoyu on 25/01/2017.
-  */
+ * Created by tuoyu on 25/01/2017.
+ */
 object Main
-  extends Configuration {
+    extends Configuration {
 
   def main(args: Array[String]): Unit = {
     lazy val cmd = new ArgumentConf(args)

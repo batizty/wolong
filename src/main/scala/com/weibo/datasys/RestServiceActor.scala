@@ -19,7 +19,6 @@ class RestServiceActor
 
   def actorRefFactory: ActorContext = context
 
-  def remotePath =
 
   def receive: Receive = runRoute(authRoute) orElse {
     case m: Any =>
