@@ -1,6 +1,9 @@
 package com.weibo.datasys.rest.util
 
+import java.io.InputStream
+
 import com.weibo.datasys.rest.data.{DBGroup, DBUser, Group, User}
+import com.weibo.datasys.rest.util.HadoopPolicySettor._
 import org.slf4j.LoggerFactory
 
 import scala.io.Source
@@ -27,8 +30,8 @@ object HadoopShellSettor {
   ): Option[String] = {
     val fname = path.getOrElse(default_shell)
     try {
-      val resourcePath = getClass.getResource("/" + fname).getPath
-      val lines = Source.fromFile(resourcePath).mkString
+      val stream: InputStream = getClass.getResourceAsStream("/" + fname)
+      val lines = Source.fromInputStream(stream).mkString
       val gmap = groups
         .map { g => (g.id, g.name.trim) }
         .toMap

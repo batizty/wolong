@@ -1,9 +1,11 @@
 package com.weibo.datasys
 
-import akka.actor.{ActorSystem, Props}
+import akka.actor.{ActorSystem, Props, _}
 import akka.io.IO
+import akka.util.Timeout
 import com.weibo.datasys.rest.Configuration
 import spray.can.Http
+import scala.concurrent.duration._
 
 /**
  * Created by tuoyu on 25/01/2017.
@@ -30,6 +32,9 @@ object Main
         cluster_name,
         config.getConfig("rest-service").withFallback(config)
       )
+      implicit val executionContext = system.dispatcher
+      implicit val timeout = Timeout(10 seconds)
+
       val restService = system.actorOf(Props[RestServiceActor], RestServiceActor.Name)
       IO(Http) ! Http.Bind(restService, host, port)
     }

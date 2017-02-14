@@ -39,6 +39,7 @@ class RestServiceActor
 
   def receive: Receive = runRoute(authRoute) orElse {
     case m: SayHello => {
+      // TODO Testing Code
       log.info(s"Sendout hi to RemoteActor $remoteActor")
       remoteActor ! "hi"
       scheduler.scheduleOnce(10 seconds, self, SayHello())

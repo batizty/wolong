@@ -14,7 +14,6 @@ import org.joda.time.DateTime
 import org.json4s.DefaultFormats
 import org.json4s.native.JsonMethods._
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.util.{Failure, Success}
 
@@ -57,6 +56,7 @@ class JobManager
   // all implicit value
   implicit val formats = DefaultFormats
   implicit val timeout: Timeout = 10 seconds
+  implicit val executionContext = context.system.dispatcher
 
   val scheduler = context.system.scheduler
   val refresh_time_interval = 600 seconds

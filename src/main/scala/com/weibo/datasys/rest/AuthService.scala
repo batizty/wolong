@@ -41,7 +41,6 @@ trait AuthService
             }
           }
         }
-
     }
   }
 
