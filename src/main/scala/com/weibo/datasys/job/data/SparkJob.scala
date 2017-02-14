@@ -13,12 +13,7 @@ import org.apache.mesos.mesos.{ CommandInfo, Resource, Value }
 
 object SparkJob {
   implicit def statusToJobStatus(s: String): JobStatus.Value = {
-    s match {
-      case "0" => JobStatus.TaskStaging
-      case "1" => JobStatus.TaskFinished
-      case _ => JobStatus.TaskNotSupport
-    }
-
+    JobStatus.apply(s.toInt)
   }
 
   implicit def JobStatusToStatus(jobStatus: JobStatus.Value): String = {
