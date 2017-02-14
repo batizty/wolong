@@ -2,6 +2,7 @@ package com.weibo.datasys.util
 
 import akka.actor.ActorSystem
 import akka.util.Timeout
+import com.typesafe.config.ConfigFactory
 import com.weibo.datasys.rest.Configuration
 import org.slf4j.LoggerFactory
 import spray.client.pipelining._
@@ -16,7 +17,8 @@ import scala.concurrent.duration._
  */
 object WebClient extends Configuration {
   val log = LoggerFactory.getLogger(getClass.getName)
-  implicit val system = ActorSystem(cluster_name)
+  val conf = ConfigFactory.parseString("akka.remote.netty.tcp.port=" + 2553)
+  implicit val system = ActorSystem(cluster_name, conf)
 
   import system.dispatcher
 
