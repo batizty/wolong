@@ -17,7 +17,7 @@ import scala.concurrent.duration._
 object WebClient extends Configuration {
   val log = LoggerFactory.getLogger(getClass.getName)
 
-  implicit val system = ActorSystem("spray-client")
+  implicit val system = ActorSystem("wolong")
 
   import system.dispatcher
 
