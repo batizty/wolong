@@ -1,6 +1,6 @@
 package com.weibo.datasys
 
-import akka.actor.Props
+import akka.actor.{ ActorContext, Props }
 import com.weibo.datasys.job.JobManager
 
 /**
@@ -20,9 +20,9 @@ class JobSchedulerActor
 
   val jobManager = actorRefFactory.actorOf(JobManager.props(), JobManager.Name)
 
-  def actorRefFactory = context
+  def actorRefFactory: ActorContext = context
 
-  def receive = {
-    case _ => ()
+  def receive: Receive = {
+    case msg: Any => log.error("UnRecognize Message" + msg.toString)
   }
 }

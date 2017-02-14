@@ -6,8 +6,10 @@ import akka.util.Timeout
 import com.weibo.datasys.{ Path => AuthServicePath, SecondPath => AuthServiceSecondPath }
 import org.json4s._
 import org.json4s.native.Serialization
-import spray.routing.HttpService
+import spray.httpx.marshalling.ToResponseMarshallable
+import spray.routing.{ StandardRoute, HttpService }
 
+import scala.concurrent.ExecutionContextExecutor
 import scala.concurrent.duration._
 
 /**
@@ -43,9 +45,9 @@ trait AuthService
     }
   }
 
-  implicit def executionContext = actorRefFactory.dispatcher
+  implicit def executionContext: ExecutionContextExecutor = actorRefFactory.dispatcher
 
-  def sendToWorker[T](msg: AuthMessage) = {
+  def sendToWorker[T](msg: AuthMessage): StandardRoute = {
     complete {
       (authWorker ? msg) map { returnMsg =>
         returnMsg match {
@@ -75,7 +77,7 @@ case class CheckUserValid(
 case class AuthResult(message: String = "", code: Int = 0) extends AuthMessage {
   implicit val format = Serialization.formats(NoTypeHints)
 
-  override def toString = {
+  override def toString: String = {
     Serialization.writePretty(this)
   }
 

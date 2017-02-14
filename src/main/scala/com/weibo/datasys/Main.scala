@@ -27,7 +27,7 @@ object Main
     }
 
     def startRestService() = {
-      val restService = system.actorOf(RestServiceActor.props(), RestServiceActor.Name)
+      val restService = system.actorOf(Props[RestServiceActor], RestServiceActor.Name)
       IO(Http) ! Http.Bind(restService, host, port)
     }
 
