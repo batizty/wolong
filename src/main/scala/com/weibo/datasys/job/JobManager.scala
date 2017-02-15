@@ -102,9 +102,17 @@ class JobManager
   }
 
   def receive: Actor.Receive = {
-    case m: SparkJob2 => {
-      self ! AddJobs(List(m))
-      sender() ! AuthResult()
+    case ss: String => {
+      try {
+        val job = parse(ss).extract[SparkJob2]
+        self ! AddJobs(List(job))
+        sender() ! AuthResult()
+      } catch {
+        case err: Throwable =>
+          log.error(err, "Extract SparkJob Failed with String : " + ss)
+          sender() ! AuthResult("Extract SparkJob Failed with String " + ss, 1)
+      }
+
     }
 
     case m: AddJobs => {
@@ -125,7 +133,6 @@ class JobManager
 
     case m: Any =>
       log.error("Not Support Message :" + m.toString + " From Actor " + sender().toString())
-      sender() ! m.toString
   }
 
   def reportJobStatus(m: ChangeJobStatus): Unit = {

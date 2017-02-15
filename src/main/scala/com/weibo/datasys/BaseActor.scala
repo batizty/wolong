@@ -1,6 +1,7 @@
 package com.weibo.datasys
 
 import akka.actor.{Actor, ActorLogging}
+import org.slf4j.LoggerFactory
 
 /**
  * Created by tuoyu on 06/02/2017.
@@ -8,6 +9,7 @@ import akka.actor.{Actor, ActorLogging}
 trait BaseActor
   extends Actor
   with ActorLogging {
+
   override def preStart(): Unit = {
     log.info("Start Acotr " + getClass.getName)
   }

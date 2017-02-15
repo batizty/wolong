@@ -5,11 +5,11 @@ import akka.pattern.ask
 import akka.util.Timeout
 import com.weibo.datasys.job.JobManager
 import com.weibo.datasys.job.data.SparkJob2
-import com.weibo.datasys.{Path => AuthServicePath, SecondPath => AuthServiceSecondPath, JobSchedulerActor}
+import com.weibo.datasys.{JobSchedulerActor, Path => AuthServicePath, SecondPath => AuthServiceSecondPath}
 import org.json4s._
+import org.json4s.native.JsonMethods._
 import org.json4s.native.Serialization
-import spray.httpx.marshalling.ToResponseMarshallable
-import spray.routing.{StandardRoute, HttpService}
+import spray.routing.{HttpService, StandardRoute}
 
 import scala.concurrent.ExecutionContextExecutor
 import scala.concurrent.duration._
@@ -21,6 +21,7 @@ trait AuthService
   extends HttpService
   with Configuration {
 
+  implicit val formats = DefaultFormats
   implicit val timeout = Timeout(expiredTime seconds)
 
   val authWorker = actorRefFactory.actorOf(Props[AuthWorker], "auth-worker")
@@ -54,8 +55,16 @@ trait AuthService
     } ~
       path(AuthServicePath.SCHEDULER / AuthServiceSecondPath.SPARK_JOB) {
         post {
-          entity(as[String]) { job =>
-            complete("OK String = " + job)
+          entity(as[String]) { ss =>
+            try {
+              val job = parse(ss).extract[SparkJob2]
+              sendToScheduler(ss)
+            } catch {
+              case err: Throwable =>
+                throw err
+                //                log.error(err, "Extract SparkJob Failed with String : " + ss)
+                complete(AuthResult().toString)
+            }
           }
         }
       }
@@ -63,7 +72,7 @@ trait AuthService
 
   implicit def executionContext: ExecutionContextExecutor = actorRefFactory.dispatcher
 
-  def sendToScheduler[T](job: SparkJob2): StandardRoute = {
+  def sendToScheduler[T](job: String): StandardRoute = {
     complete { (jobManager ? job).map(_.toString) }
   }
 
