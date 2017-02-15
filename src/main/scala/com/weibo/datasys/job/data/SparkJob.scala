@@ -113,12 +113,12 @@ case class SparkJob(
   def getShellCommand(): String = {
     val cmd =
       "/usr/local/spark/bin/spark-submit " +
-        "--class " + user_class +
-        "--name " + jobName +
+        "--class " + user_class + " " +
+        "--name " + jobName + " " +
         "--driver-memory " + driverMemory() + "G " +
         "--executor-memory " + executorMemory() + "G " +
-        "--total-executor-cores " + totalExecutorCores() +
-        user_jars
+        "--total-executor-cores " + totalExecutorCores() + " "
+    user_jars
     arguments map { args =>
       cmd + args
     } getOrElse (cmd)
