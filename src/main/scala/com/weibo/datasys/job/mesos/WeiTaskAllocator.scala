@@ -20,9 +20,6 @@ trait WeiTaskAllocator extends LazyLogging {
     logger info s"Searching for valid allocation for tasks ${tasks} in offers: $offers"
     val taskList = tasks.map(_.desc).toList
 
-    // TODO 这里加上资源处理
-    // 从TaskDescriptor里面解释出来Json的数据格式，然后进行处理,计算资源总的消耗量
-
     // optimization: first quickly check approximate resource constraints
     if (trySimpleAllocation(ResourceProcessor.sumResources(offers.flatMap(_.resources)), taskList)) {
       // generate actual allocations, and verify them:

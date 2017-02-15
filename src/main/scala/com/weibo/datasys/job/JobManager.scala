@@ -202,7 +202,6 @@ class JobManager
     getSatisfyJob(_jobMap.map(_._2).toList) foreach { job =>
       var currentJob = job.asInstanceOf[SparkJob]
       val task = currentJob.getTask()
-      //      val task = currentJob.toTask()
       val launcher = _mesos_framework.submitTask(task)
       for { task <- launcher.info } {
         log.info("Submit " + currentJob.summary + "to MesosFrameWork " + _mesos_framework_info.name)
