@@ -22,6 +22,10 @@ trait Job {
 
   def summary: String
 
+  def getTotalCores(): Int
+
+  def getTotalMemory(): Int
+
   /**
    * TODO 这里缺少一个状态，降级，针对这个状态，需要有一个策略
    *
@@ -70,6 +74,10 @@ object JobStatus extends Enumeration {
   val TaskError = Value
 
   val TaskNotSupport = Value
+  val TaskLimitByCPU = Value
+  val TaskLimitByMemory = Value
+  val TaskLimitByDisk = Value
+  val TaskDonwGrade = Value
 
   implicit def apply1(stat: TaskState): JobStatus.Value = {
     stat match {

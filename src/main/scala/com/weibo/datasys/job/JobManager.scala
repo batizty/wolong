@@ -125,7 +125,8 @@ class JobManager
       log.debug("jobMap = " + showJobMap)
       reScheduleJobs()
     }
-    case m: RefreshJobList => refreshJobList()
+    case m: RefreshJobList =>
+      refreshJobList()
     case m: ChangeJobStatus => {
       changeJobStatus(m)
       reportJobStatus(m)
@@ -214,7 +215,7 @@ class JobManager
           case te: TaskEvent =>
             val jobStatus: JobStatus.Value = te.state
             currentJob = currentJob.copy(status = jobStatus.id)
-            log.info("Job " + currentJob.jobId + "Status Change To " + currentJob.jobStatus)
+            log.info("Job " + currentJob.jobId + " Status Change To " + currentJob.jobStatus)
             self ! ChangeJobStatus(currentJob)
         })
       }

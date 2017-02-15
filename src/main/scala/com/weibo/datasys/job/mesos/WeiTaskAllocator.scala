@@ -69,6 +69,8 @@ trait WeiTaskAllocator extends LazyLogging {
         job.getTotalResources()
       } getOrElse (task.resources)
 
+      logger info s"trySimpleAllocation resources = $resources"
+
       ResourceProcessor.remainderOf(rs, resources) match {
         case Some(remainder) => trySimpleAllocation(remainder, rest)
         case None => false
