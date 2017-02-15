@@ -107,11 +107,11 @@ class JobManager
       try {
         val job = parse(ss).extract[SparkJob]
         self ! AddJobs(List(job))
-        s ! AuthResult()
+        s ! AuthResult().toString
       } catch {
         case err: Throwable =>
           log.error(err, "Extract SparkJob Failed with String : " + ss)
-          s ! AuthResult("Extract SparkJob Failed with String " + ss, 1)
+          s ! AuthResult("Extract SparkJob Failed with String " + ss, 1).toString
       }
     }
 
