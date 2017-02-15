@@ -4,9 +4,9 @@ import akka.actor.{Actor, Props}
 import akka.util.Timeout
 import com.nokia.mesos.DriverFactory
 import com.nokia.mesos.api.stream.MesosEvents.TaskEvent
-import com.weibo.datasys.job.data.{Job, JobStatus, SparkJob}
+import com.weibo.datasys.job.data.{SparkJob2, Job, JobStatus, SparkJob}
 import com.weibo.datasys.job.mesos.WeiFrameworkFactory
-import com.weibo.datasys.rest.Configuration
+import com.weibo.datasys.rest.{AuthResult, Configuration}
 import com.weibo.datasys.util.WebClient
 import com.weibo.datasys.{BaseActor, RestServiceActor}
 import org.apache.mesos.mesos.FrameworkInfo
@@ -102,6 +102,11 @@ class JobManager
   }
 
   def receive: Actor.Receive = {
+    case m: SparkJob2 => {
+      self ! AddJobs(List(m))
+      sender() ! AuthResult()
+    }
+
     case m: AddJobs => {
       _jobMap = _jobMap ++ m.jobs.map { job => (job.jobId, job) }.toMap
       log.debug("jobMap = " + showJobMap)

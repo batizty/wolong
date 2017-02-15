@@ -1,9 +1,11 @@
 package com.weibo.datasys.rest
 
-import akka.actor.Props
+import akka.actor.{ActorSelection, Props}
 import akka.pattern.ask
 import akka.util.Timeout
-import com.weibo.datasys.{Path => AuthServicePath, SecondPath => AuthServiceSecondPath}
+import com.weibo.datasys.job.JobManager
+import com.weibo.datasys.job.data.SparkJob2
+import com.weibo.datasys.{Path => AuthServicePath, SecondPath => AuthServiceSecondPath, JobSchedulerActor}
 import org.json4s._
 import org.json4s.native.Serialization
 import spray.httpx.marshalling.ToResponseMarshallable
@@ -18,8 +20,16 @@ import scala.concurrent.duration._
 trait AuthService
   extends HttpService
   with Configuration {
+
   implicit val timeout = Timeout(expiredTime seconds)
+
   val authWorker = actorRefFactory.actorOf(Props[AuthWorker], "auth-worker")
+
+  val jobManager: ActorSelection = actorRefFactory.actorSelection(
+    "akka.tcp://wolong@10.77.112.153:2552/user/" +
+      JobSchedulerActor.Name + "/" + JobManager.Name
+  )
+
   val authRoute = {
     pathPrefix(AuthServicePath.AUTH / AuthServicePath.CLUSTER) {
       path(AuthServiceSecondPath.HADOOP_POLICY_XML) {
@@ -41,10 +51,21 @@ trait AuthService
             }
           }
         }
-    }
+    } ~
+      path(AuthServicePath.SCHEDULER / AuthServiceSecondPath.SPARK_JOB) {
+        post {
+          entity(as[String]) { job =>
+            complete("OK String = " + job)
+          }
+        }
+      }
   }
 
   implicit def executionContext: ExecutionContextExecutor = actorRefFactory.dispatcher
+
+  def sendToScheduler[T](job: SparkJob2): StandardRoute = {
+    complete { (jobManager ? job).map(_.toString) }
+  }
 
   def sendToWorker[T](msg: AuthMessage): StandardRoute = {
     complete {
