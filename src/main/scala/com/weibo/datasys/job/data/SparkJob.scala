@@ -117,8 +117,7 @@ case class SparkJob(
         "--name " + jobName + " " +
         "--driver-memory " + driverMemory() + "G " +
         "--executor-memory " + executorMemory() + "G " +
-        "--total-executor-cores " + totalExecutorCores() + " "
-    user_jars
+        "--total-executor-cores " + totalExecutorCores() + " " + user_jars
     arguments map { args =>
       cmd + args
     } getOrElse (cmd)
