@@ -4,7 +4,7 @@ import akka.actor.{Actor, Props}
 import akka.util.Timeout
 import com.nokia.mesos.DriverFactory
 import com.nokia.mesos.api.stream.MesosEvents.TaskEvent
-import com.weibo.datasys.job.data.{SparkJob2, Job, JobStatus, SparkJob}
+import com.weibo.datasys.job.data.{Job, JobStatus, SparkJob}
 import com.weibo.datasys.job.mesos.WeiFrameworkFactory
 import com.weibo.datasys.rest.{AuthResult, Configuration}
 import com.weibo.datasys.util.WebClient
@@ -103,16 +103,16 @@ class JobManager
 
   def receive: Actor.Receive = {
     case ss: String => {
+      val s = sender()
       try {
-        val job = parse(ss).extract[SparkJob2]
+        val job = parse(ss).extract[SparkJob]
         self ! AddJobs(List(job))
-        sender() ! AuthResult()
+        s ! AuthResult()
       } catch {
         case err: Throwable =>
           log.error(err, "Extract SparkJob Failed with String : " + ss)
-          sender() ! AuthResult("Extract SparkJob Failed with String " + ss, 1)
+          s ! AuthResult("Extract SparkJob Failed with String " + ss, 1)
       }
-
     }
 
     case m: AddJobs => {
@@ -201,19 +201,20 @@ class JobManager
   def reScheduleJobs(): Unit = {
     getSatisfyJob(_jobMap.map(_._2).toList) foreach { job =>
       var currentJob = job.asInstanceOf[SparkJob]
-      val task = currentJob.toTask()
+      val task = currentJob.getTask()
+      //      val task = currentJob.toTask()
       val launcher = _mesos_framework.submitTask(task)
       for { task <- launcher.info } {
         log.info("Submit " + currentJob.summary + "to MesosFrameWork " + _mesos_framework_info.name)
         currentJob = currentJob.copy(
-          mesos_task_id = task.taskId.toString,
-          status = JobStatus.TaskRunning.id.toString
+          mesos_task_id = Some(task.taskId.toString),
+          status = JobStatus.TaskRunning.id
         )
         self ! ChangeJobStatus(currentJob)
         launcher.events.subscribe(taskEvent => taskEvent match {
           case te: TaskEvent =>
             val jobStatus: JobStatus.Value = te.state
-            currentJob = currentJob.copy(status = jobStatus.id.toString)
+            currentJob = currentJob.copy(status = jobStatus.id)
             log.info("Job " + currentJob.jobId + "Status Change To " + currentJob.jobStatus)
             self ! ChangeJobStatus(currentJob)
         })

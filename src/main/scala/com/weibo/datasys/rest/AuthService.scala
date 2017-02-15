@@ -4,7 +4,7 @@ import akka.actor.{ActorSelection, Props}
 import akka.pattern.ask
 import akka.util.Timeout
 import com.weibo.datasys.job.JobManager
-import com.weibo.datasys.job.data.SparkJob2
+import com.weibo.datasys.job.data.SparkJob
 import com.weibo.datasys.{JobSchedulerActor, Path => AuthServicePath, SecondPath => AuthServiceSecondPath}
 import org.json4s._
 import org.json4s.native.JsonMethods._
@@ -57,7 +57,7 @@ trait AuthService
         post {
           entity(as[String]) { ss =>
             try {
-              val job = parse(ss).extract[SparkJob2]
+              val job = parse(ss).extract[SparkJob]
               sendToScheduler(ss)
             } catch {
               case err: Throwable =>
@@ -73,6 +73,7 @@ trait AuthService
   implicit def executionContext: ExecutionContextExecutor = actorRefFactory.dispatcher
 
   def sendToScheduler[T](job: String): StandardRoute = {
+    implicit val timeout = Timeout(20 seconds)
     complete { (jobManager ? job).map(_.toString) }
   }
 
