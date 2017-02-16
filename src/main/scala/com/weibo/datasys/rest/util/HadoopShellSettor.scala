@@ -37,7 +37,7 @@ object HadoopShellSettor {
         .toMap
       val ug = users.map { u =>
         Try {
-          gmap.get(u.groupId).map(gn => (u.name.trim, gn))
+          gmap.get(u.userGroupId).map(gn => (u.name.trim, gn))
         }.getOrElse(None)
       }.flatten
 

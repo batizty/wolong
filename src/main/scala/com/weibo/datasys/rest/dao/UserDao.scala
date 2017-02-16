@@ -76,7 +76,7 @@ class WebUserDao
 
   override def getUserById(id: Long): Future[Option[User]] = {
     getAllUser() map { us =>
-      us.filter(_.id == id).headOption
+      us.filter(_.userId == id).headOption
     }
   }
 

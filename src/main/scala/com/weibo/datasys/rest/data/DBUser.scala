@@ -14,6 +14,8 @@ case class DBUser(
 ) extends User {
   val ACTIVED_FLAG = "actived"
   override def isValid: Boolean = state == ACTIVED_FLAG
+  def userGroupId: String = groupId.toString
+  def userId: String = id.toString
 }
 
 /**

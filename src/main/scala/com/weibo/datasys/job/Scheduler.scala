@@ -33,10 +33,10 @@ trait SimpleSchedulerFIFO
       groups <- groupDao.getAllGroup()
     } {
       val gmap = groups.map { g => (g.groupId, g) } toMap
-      val umap = users.map { u => (u.id, u) } toMap
+      val umap = users.map { u => (u.userId, u) } toMap
       val ugmap: Map[String, Group] = users flatMap { u =>
-        gmap.get(u.groupId).map { g =>
-          (u.id, g)
+        gmap.get(u.userGroupId).map { g =>
+          (u.userId, g)
         }
       } toMap
 
@@ -44,7 +44,7 @@ trait SimpleSchedulerFIFO
         .filter(_.jobStatus == JobStatus.TaskRunning)
         .flatMap { job =>
           umap.get(job.jobUserId) map { u =>
-            (u.groupId, (job.getTotalCores(), job.getTotalMemory()))
+            (u.userGroupId, (job.getTotalCores(), job.getTotalMemory()))
           }
         }.toMap
 
@@ -60,7 +60,7 @@ trait SimpleSchedulerFIFO
         .filter { job =>
           umap.get(job.jobUserId) match {
             case Some(u) =>
-              availableGroups.get(u.groupId).exists {
+              availableGroups.get(u.userGroupId).exists {
                 case ((core, mem)) =>
                   (core - job.getTotalCores() >= 0) && (mem - job.getTotalMemory() >= 0)
               }
