@@ -199,7 +199,7 @@ class JobManager
     ss.mkString("\n")
   }
 
-  def reScheduleJobs(): Unit = {
+  def reScheduleJobs(): Unit = synchronized {
     getSatisfyJob(_jobMap.map(_._2).toList) {
       _ foreach { job =>
         var currentJob = job.asInstanceOf[SparkJob]
