@@ -39,7 +39,8 @@ trait Job {
         JobStatus.TaskKilling |
         JobStatus.TaskFailed |
         JobStatus.TaskKilled |
-        JobStatus.TaskError => false
+        JobStatus.TaskError |
+        JobStatus.TaskNotSupport => false
       case _ => true
     }
   }
