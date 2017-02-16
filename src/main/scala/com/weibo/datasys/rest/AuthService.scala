@@ -62,7 +62,6 @@ trait AuthService
             } catch {
               case err: Throwable =>
                 throw err
-                //                log.error(err, "Extract SparkJob Failed with String : " + ss)
                 complete(AuthResult().toString)
             }
           }

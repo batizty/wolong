@@ -61,7 +61,7 @@ class JobManager
   implicit val executionContext = context.system.dispatcher
 
   val scheduler = context.system.scheduler
-  val refresh_time_interval = 600 seconds
+  val refresh_time_interval = 60 seconds
   val _mesos_framework_info = FrameworkInfo(
     name = mesos_framework_name,
     user = mesos_default_user
@@ -93,6 +93,11 @@ class JobManager
           self,
           RefreshJobList()
         )
+        scheduler.scheduleOnce(
+          refresh_time_interval,
+          self,
+          ReScheduleJobs()
+        )
       case Failure(err) =>
         logError(err, s"Init Mesos FrameWork Failed")
         sys.exit(0)
@@ -108,6 +113,7 @@ class JobManager
     // TODO 这里需要改下序列华的实现
     case ss: String => {
       val s = sender()
+      log.info("Receive Remote Actor Message " + ss + " From Actor " + s)
       try {
         val job = parse(ss).extract[SparkJob]
         self ! AddJobs(List(job))
@@ -119,7 +125,14 @@ class JobManager
       }
     }
 
-    case ReScheduleJobs() => { reScheduleJobs() }
+    case ReScheduleJobs() => {
+      reScheduleJobs()
+      scheduler.scheduleOnce(
+        refresh_time_interval,
+        self,
+        ReScheduleJobs()
+      )
+    }
 
     case m: AddJobs => {
       _jobMap = _jobMap ++ m.jobs.map { job => (job.jobId, job) }.toMap
