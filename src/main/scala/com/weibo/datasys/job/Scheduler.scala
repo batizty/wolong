@@ -9,7 +9,7 @@ import com.weibo.datasys.rest.data.{Group, Resource}
  * Created by tuoyu on 09/02/2017.
  */
 trait Scheduler {
-  def getSatisfyJob(jobs: List[Job])(f: Option[Job] => Unit): Unit
+  def getSatisfyJob(jobs: List[Job])(f: Option[Job] => Unit)(fLimitByCore: Job => Unit)(fLimitByMem: Job => Unit): Unit
 }
 
 trait SimpleSchedulerFIFO
@@ -27,18 +27,13 @@ trait SimpleSchedulerFIFO
 
   def getSatisfyJob(
     jobs: List[Job]
-  )(f: Option[Job] => Unit): Unit = {
+  )(f: Option[Job] => Unit)(fLimitByCore: Job => Unit)(fLimitByMem: Job => Unit): Unit = {
     for {
       users <- userDao.getAllUser()
       groups <- groupDao.getAllGroup()
     } {
       val gmap = groups.map { g => (g.groupId, g) } toMap
       val umap = users.map { u => (u.userId, u) } toMap
-      val ugmap: Map[String, Group] = users flatMap { u =>
-        gmap.get(u.userGroupId).map { g =>
-          (u.userId, g)
-        }
-      } toMap
 
       val runingJobResources: Map[String, (Long, Long)] = jobs
         .filter(_.jobStatus == JobStatus.TaskRunning)
@@ -62,7 +57,15 @@ trait SimpleSchedulerFIFO
             case Some(u) =>
               availableGroups.get(u.userGroupId).exists {
                 case ((core, mem)) =>
-                  (core - job.getTotalCores() >= 0) && (mem - job.getTotalMemory() >= 0)
+                  if (job.getTotalCores() > core) {
+                    fLimitByCore(job)
+                    false
+                  } else if (job.getTotalMemory() > mem) {
+                    fLimitByMem(job)
+                    false
+                  } else {
+                    true
+                  }
               }
             case None => false
           }

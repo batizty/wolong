@@ -13,7 +13,7 @@ trait Group {
 
 case class WebGroup(
   group_id: String,
-  groupName: String,
+  name: String,
   core: String,
   mem: String,
   executor: String,
@@ -21,6 +21,7 @@ case class WebGroup(
   add_time: String
 ) extends Group {
   def groupId: String = group_id
+  def groupName: String = name
   def groupCoreLimit: Long = core.toLong
   def groupMemLimit: Long = mem.toLong
   def groupHdfsLimit: Long = hdfs.toLong

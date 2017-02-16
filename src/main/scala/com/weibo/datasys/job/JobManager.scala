@@ -221,6 +221,15 @@ class JobManager
           })
         }
       }
+    } { job =>
+      // LimitBy Core
+      val spJob = job.asInstanceOf[SparkJob]
+      self ! ChangeJobStatus(spJob.copy(status = JobStatus.TaskLimitByCPU.id))
+    } { job =>
+      // LimitBy Mem
+      val spJob = job.asInstanceOf[SparkJob]
+      self ! ChangeJobStatus(spJob.copy(status = JobStatus.TaskLimitByMemory.id))
+
     }
   }
 
