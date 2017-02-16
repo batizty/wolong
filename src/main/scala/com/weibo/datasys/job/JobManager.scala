@@ -61,7 +61,7 @@ class JobManager
   implicit val executionContext = context.system.dispatcher
 
   val scheduler = context.system.scheduler
-  val refresh_time_interval = 60 seconds
+  val refresh_time_interval = 30 seconds
   val _mesos_framework_info = FrameworkInfo(
     name = mesos_framework_name,
     user = mesos_default_user
@@ -136,17 +136,19 @@ class JobManager
 
     case m: AddJobs => {
       _jobMap = _jobMap ++ m.jobs.map { job => (job.jobId, job) }.toMap
-      log.debug("After Add Job Message " + m + " jobMap = " + showJobMap)
+      log.info("After Add Job Message " + m + showJobMap)
     }
     case m: DeleteJob => {
       _jobMap -= m.id
-      log.debug("After Delete Job " + m + " jobMap = " + showJobMap)
+      log.info("After Delete Job " + m + showJobMap)
     }
     case m: RefreshJobList =>
       refreshJobList()
+
     case m: ChangeJobStatus => {
       changeJobStatus(m)
       reportJobStatus(m)
+      log.info("After ChangeJobStatus " + m + showJobMap)
     }
 
     case m: Any =>
@@ -213,7 +215,7 @@ class JobManager
     val ss = for { (id, task) <- _jobMap } yield {
       id + " -> " + task.summary
     }
-    ss.mkString("\n")
+    "\nJobMap=\n" + ss.mkString("\n")
   }
 
   def reScheduleJobs(): Unit = {
