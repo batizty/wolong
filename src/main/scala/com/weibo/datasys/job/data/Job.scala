@@ -34,14 +34,17 @@ trait Job {
   def canScheduler: Boolean = {
     jobStatus match {
       case JobStatus.TaskStaging |
-        JobStatus.TaskStarting => true
-      case JobStatus.TaskRunning |
-        JobStatus.TaskKilling |
-        JobStatus.TaskFinished |
-        JobStatus.TaskFailed |
-        JobStatus.TaskKilled |
-        JobStatus.TaskLost |
-        JobStatus.TaskError => false
+        JobStatus.TaskStarting |
+        JobStatus.TaskLimitByCPU |
+        JobStatus.TaskLimitByMemory => true
+      case _ => false
+//      case JobStatus.TaskRunning |
+//        JobStatus.TaskKilling |
+//        JobStatus.TaskFinished |
+//        JobStatus.TaskFailed |
+//        JobStatus.TaskKilled |
+//        JobStatus.TaskLost |
+//        JobStatus.TaskError => false
     }
   }
 
