@@ -265,7 +265,7 @@ class JobManager
     if (job.isFinishedOrFailure) {
       self ! DeleteJob(job.jobId)
     } else {
-      _jobMap.updated(job.jobId, job)
+      _jobMap = _jobMap.updated(job.jobId, job)
     }
   }
 
