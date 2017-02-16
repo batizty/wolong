@@ -43,6 +43,8 @@ object JobManager {
 
   private case class XX(code: Int, data: List[SparkJob])
 
+  private[JobManager] case class ReScheduleJobs()
+
 }
 
 class JobManager
@@ -102,6 +104,8 @@ class JobManager
   }
 
   def receive: Actor.Receive = {
+
+    // TODO 这里需要改下序列华的实现
     case ss: String => {
       val s = sender()
       try {
@@ -115,15 +119,15 @@ class JobManager
       }
     }
 
+    case ReScheduleJobs() => { reScheduleJobs() }
+
     case m: AddJobs => {
       _jobMap = _jobMap ++ m.jobs.map { job => (job.jobId, job) }.toMap
-      log.debug("jobMap = " + showJobMap)
-      reScheduleJobs()
+      log.debug("After Add Job Message " + m + " jobMap = " + showJobMap)
     }
     case m: DeleteJob => {
       _jobMap -= m.id
-      log.debug("jobMap = " + showJobMap)
-      reScheduleJobs()
+      log.debug("After Delete Job " + m + " jobMap = " + showJobMap)
     }
     case m: RefreshJobList =>
       refreshJobList()
@@ -199,11 +203,11 @@ class JobManager
     ss.mkString("\n")
   }
 
-  def reScheduleJobs(): Unit = synchronized {
+  def reScheduleJobs(): Unit = {
     getSatisfyJob(_jobMap.map(_._2).toList) {
       _ foreach { job =>
-        log.error("job status \n" + showJobMap)
-        log.error("submit job = " + job.summary)
+        log.info("job status \n" + showJobMap)
+        log.info("submit job = " + job.summary)
         var currentJob = job.asInstanceOf[SparkJob]
         val task = currentJob.getTask()
         val launcher = _mesos_framework.submitTask(task)

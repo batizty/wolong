@@ -22,7 +22,7 @@ case class SparkJob(
   name: String,
   user_id: String,
   add_time: String,
-  status: Int,
+  status: Int = 0,
   user_class: String,
   user_jars: String,
   driver_cores: Long = 1L,
@@ -113,15 +113,19 @@ case class SparkJob(
   )
 
   def getShellCommand(): String = {
-    val cmd =
-      "/usr/local/spark/bin/spark-submit " +
-        "--class " + user_class + " " +
-        "--name " + jobName + " " +
-        "--driver-memory " + driverMemory() + "G " +
-        "--executor-memory " + executorMemory() + "G " +
-        "--total-executor-cores " + totalExecutorCores() + " " + user_jars
+    val cmd = Seq(
+      "/usr/local/spark/bin/spark-submit",
+      "--class", user_class,
+      "--name", jobName,
+      "--driver-cores", driverCore(),
+      "--driver-memory", driverMemory() + "G ",
+      "--executor-memory", executorMemory() + "G ",
+      "--total-executor-cores", totalExecutorCores(),
+      user_jars
+    ).mkString(" ")
+
     arguments map { args =>
-      cmd + " " + args
+      Seq(cmd, args).mkString(" ")
     } getOrElse (cmd)
   }
 }

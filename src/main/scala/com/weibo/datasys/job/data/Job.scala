@@ -34,16 +34,13 @@ trait Job {
   def canScheduler: Boolean = {
     jobStatus match {
       case JobStatus.TaskStaging |
-        JobStatus.TaskLimitByCPU |
-        JobStatus.TaskLimitByMemory => true
-      case _ => false
-//      case JobStatus.TaskRunning |
-//        JobStatus.TaskKilling |
-//        JobStatus.TaskFinished |
-//        JobStatus.TaskFailed |
-//        JobStatus.TaskKilled |
-//        JobStatus.TaskLost |
-//        JobStatus.TaskError => false
+        JobStatus.TaskStarting |
+        JobStatus.TaskRunning |
+        JobStatus.TaskKilling |
+        JobStatus.TaskFailed |
+        JobStatus.TaskKilled |
+        JobStatus.TaskError => false
+      case _ => true
     }
   }
 
@@ -65,6 +62,7 @@ object JobType extends Enumeration {
 }
 
 object JobStatus extends Enumeration {
+  val TaskQueue = Value
   val TaskStaging = Value
   val TaskStarting = Value
   val TaskRunning = Value
@@ -79,7 +77,7 @@ object JobStatus extends Enumeration {
   val TaskLimitByCPU = Value
   val TaskLimitByMemory = Value
   val TaskLimitByDisk = Value
-  val TaskDonwGrade = Value
+  val TaskDownGrade = Value
 
   implicit def apply1(stat: TaskState): JobStatus.Value = {
     stat match {
