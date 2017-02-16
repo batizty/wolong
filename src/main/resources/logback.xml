@@ -20,24 +20,20 @@
 
     <logger name="com.weibo.datasys" level="info" additivity="false">
         <appender-ref ref="console"/>
-        <appender-ref ref="logfile"/>
     </logger>
 
 
-    <logger name="com.nokia.mesos" level="info" additivity="false">
+    <logger name="com.nokia.mesos" level="error" additivity="false">
         <appender-ref ref="console"/>
-        <appender-ref ref="logfile"/>
     </logger>
 
 
     <logger name="akka" level="info" additivity="false">
         <appender-ref ref="console"/>
-        <appender-ref ref="logfile"/>
     </logger>
 
     <root level="info">
         <appender-ref ref="console"/>
-        <appender-ref ref="logfile"/>
     </root>
 
 </configuration>

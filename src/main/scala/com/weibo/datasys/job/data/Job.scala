@@ -34,7 +34,6 @@ trait Job {
   def canScheduler: Boolean = {
     jobStatus match {
       case JobStatus.TaskStaging |
-        JobStatus.TaskStarting |
         JobStatus.TaskLimitByCPU |
         JobStatus.TaskLimitByMemory => true
       case _ => false
