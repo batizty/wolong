@@ -25,6 +25,7 @@ case class SparkJob(
   status: Int,
   user_class: String,
   user_jars: String,
+  driver_cores: Int = 1,
   driver_memory: Option[Int] = None,
   executor_memory: Option[Int] = None,
   total_executor_cores: Option[Int] = None,
@@ -64,7 +65,7 @@ case class SparkJob(
   }
 
   /* Spark Job Properties */
-  def driverCore(): Int = 1
+  def driverCore(): Int = driver_cores
 
   def driverMemory(): Int = driver_memory.getOrElse(1)
 

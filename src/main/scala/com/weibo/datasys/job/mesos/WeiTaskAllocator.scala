@@ -59,19 +59,19 @@ trait WeiTaskAllocator extends LazyLogging {
     case Nil =>
       true
     case task :: rest =>
-      import org.json4s.DefaultFormats
-      import org.json4s.native.JsonMethods._
-      implicit val formats = DefaultFormats
 
-      val resources = Try {
-        val Array(jid, jname, jjson) = task.name.split('\u0001')
-        val job = parse(jjson).extract[SparkJob]
-        job.getTotalResources()
-      } getOrElse (task.resources)
+      //    目前来看这种做法不是很好，mesos来负责排队等处理
+      //    import org.json4s.DefaultFormats
+      //    import org.json4s.native.JsonMethods._
+      //    implicit val formats = DefaultFormats
+      //
+      //    val resources = Try {
+      //    val Array(jid, jname, jjson) = task.name.split('\u0001')
+      //    val job = parse(jjson).extract[SparkJob]
+      //    job.getTotalResources()
+      //    } getOrElse (task.resources)
 
-      logger info s"trySimpleAllocation resources = $resources"
-
-      ResourceProcessor.remainderOf(rs, resources) match {
+      ResourceProcessor.remainderOf(rs, task.resources) match {
         case Some(remainder) => trySimpleAllocation(remainder, rest)
         case None => false
       }
