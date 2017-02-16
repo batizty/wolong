@@ -22,9 +22,9 @@ trait Job {
 
   def summary: String
 
-  def getTotalCores(): Int
+  def getTotalCores(): Long
 
-  def getTotalMemory(): Int
+  def getTotalMemory(): Long
 
   /**
    * TODO 这里缺少一个状态，降级，针对这个状态，需要有一个策略
@@ -34,9 +34,9 @@ trait Job {
   def canScheduler: Boolean = {
     jobStatus match {
       case JobStatus.TaskStaging |
-        JobStatus.TaskStarting |
-        JobStatus.TaskRunning => true
-      case JobStatus.TaskKilling |
+        JobStatus.TaskStarting => true
+      case JobStatus.TaskRunning |
+        JobStatus.TaskKilling |
         JobStatus.TaskFinished |
         JobStatus.TaskFailed |
         JobStatus.TaskKilled |

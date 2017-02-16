@@ -55,13 +55,13 @@ class WebGroupDao
 
   override def getGroupById(id: Long): Future[Option[Group]] = {
     getAllGroup() map { gs =>
-      gs.filter(_.id == id).headOption
+      gs.filter(_.groupId == id).headOption
     }
   }
 
   override def getGroupByName(name: String): Future[Option[Group]] = {
     getAllGroup() map { gs =>
-      gs.filter(_.name == name).headOption
+      gs.filter(_.groupName == name).headOption
     }
   }
 

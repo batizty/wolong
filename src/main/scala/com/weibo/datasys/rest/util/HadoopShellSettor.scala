@@ -33,7 +33,7 @@ object HadoopShellSettor {
       val stream: InputStream = getClass.getResourceAsStream("/" + fname)
       val lines = Source.fromInputStream(stream).mkString
       val gmap = groups
-        .map { g => (g.id, g.name.trim) }
+        .map { g => (g.groupId, g.groupName.trim) }
         .toMap
       val ug = users.map { u =>
         Try {

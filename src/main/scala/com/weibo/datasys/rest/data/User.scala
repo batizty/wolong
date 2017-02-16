@@ -4,11 +4,11 @@ package com.weibo.datasys.rest.data
  * Created by tuoyu on 25/01/2017.
  */
 trait User {
-  def id: Long
+  def id: String
 
   def name: String
 
-  def groupId: Long
+  def groupId: String
 
   def isValid: Boolean
 }
@@ -28,7 +28,7 @@ case class WebUser(
 
   def authFlag: Int = auth.toInt
 
-  def id = user_id.toLong
+  def id: String = user_id
 
-  def groupId = group_id.toLong
+  def groupId: String = group_id
 }

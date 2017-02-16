@@ -200,24 +200,26 @@ class JobManager
   }
 
   def reScheduleJobs(): Unit = {
-    getSatisfyJob(_jobMap.map(_._2).toList) foreach { job =>
-      var currentJob = job.asInstanceOf[SparkJob]
-      val task = currentJob.getTask()
-      val launcher = _mesos_framework.submitTask(task)
-      for { task <- launcher.info } {
-        log.info("Submit " + currentJob.summary + "to MesosFrameWork " + _mesos_framework_info.name)
-        currentJob = currentJob.copy(
-          mesos_task_id = Some(task.taskId.toString),
-          status = JobStatus.TaskRunning.id
-        )
-        self ! ChangeJobStatus(currentJob)
-        launcher.events.subscribe(taskEvent => taskEvent match {
-          case te: TaskEvent =>
-            val jobStatus: JobStatus.Value = te.state
-            currentJob = currentJob.copy(status = jobStatus.id)
-            log.info("Job " + currentJob.jobId + " Status Change To " + currentJob.jobStatus)
-            self ! ChangeJobStatus(currentJob)
-        })
+    getSatisfyJob(_jobMap.map(_._2).toList) {
+      _ foreach { job =>
+        var currentJob = job.asInstanceOf[SparkJob]
+        val task = currentJob.getTask()
+        val launcher = _mesos_framework.submitTask(task)
+        for { task <- launcher.info } {
+          log.info("Submit " + currentJob.summary + "to MesosFrameWork " + _mesos_framework_info.name)
+          currentJob = currentJob.copy(
+            mesos_task_id = Some(task.taskId.toString),
+            status = JobStatus.TaskRunning.id
+          )
+          self ! ChangeJobStatus(currentJob)
+          launcher.events.subscribe(taskEvent => taskEvent match {
+            case te: TaskEvent =>
+              val jobStatus: JobStatus.Value = te.state
+              currentJob = currentJob.copy(status = jobStatus.id)
+              log.info("Job " + currentJob.jobId + " Status Change To " + currentJob.jobStatus)
+              self ! ChangeJobStatus(currentJob)
+          })
+        }
       }
     }
   }

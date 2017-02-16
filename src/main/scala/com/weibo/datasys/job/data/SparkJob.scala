@@ -25,15 +25,15 @@ case class SparkJob(
   status: Int,
   user_class: String,
   user_jars: String,
-  driver_cores: Int = 1,
-  driver_memory: Option[Int] = None,
-  executor_memory: Option[Int] = None,
-  total_executor_cores: Option[Int] = None,
+  driver_cores: Long = 1L,
+  driver_memory: Option[Long] = None,
+  executor_memory: Option[Long] = None,
+  total_executor_cores: Option[Long] = None,
   confs: String,
   arguments: Option[String] = None,
   mesos_task_id: Option[String] = None,
-  mesos_memory_usage: Option[Int] = None,
-  mesos_core_usage: Option[Int] = None
+  mesos_memory_usage: Option[Long] = None,
+  mesos_core_usage: Option[Long] = None
 ) extends Job {
 
   import SparkJob._
@@ -65,13 +65,13 @@ case class SparkJob(
   }
 
   /* Spark Job Properties */
-  def driverCore(): Int = driver_cores
+  def driverCore(): Long = driver_cores
 
-  def driverMemory(): Int = driver_memory.getOrElse(1)
+  def driverMemory(): Long = driver_memory.getOrElse(1)
 
-  def executorMemory(): Int = executor_memory.getOrElse(1)
+  def executorMemory(): Long = executor_memory.getOrElse(1)
 
-  def totalExecutorCores(): Int = total_executor_cores.getOrElse(2)
+  def totalExecutorCores(): Long = total_executor_cores.getOrElse(2)
 
   def toJson(): String = Serialization.write(this)
 
@@ -83,13 +83,13 @@ case class SparkJob(
     )
   }
 
-  def getTotalCores(): Int = driverCore() + totalExecutorCores()
+  def getTotalCores(): Long = driverCore() + totalExecutorCores()
 
-  def getTotalMemory(): Int = driverMemory() + getExecutorMemory()
+  def getTotalMemory(): Long = driverMemory() + getExecutorMemory()
 
-  def getExecutors(): Int = totalExecutorCores() / default_max_core_in_executor
+  def getExecutors(): Long = totalExecutorCores() / default_max_core_in_executor
 
-  def getExecutorMemory(): Int = executorMemory() * getExecutors()
+  def getExecutorMemory(): Long = executorMemory() * getExecutors()
 
   def getExecutorResource(): Seq[Resource] = {
     Seq(

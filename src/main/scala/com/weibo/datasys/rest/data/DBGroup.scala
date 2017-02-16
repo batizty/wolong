@@ -8,9 +8,15 @@ import slick.jdbc.MySQLProfile.api._
 
 case class DBGroup(
   id: Long,
-  name: String,
+  groupName: String,
   creator: String
-) extends Group
+) extends Group {
+  val default_value: Long = 10L
+  def groupId: String = id.toString
+  def groupCoreLimit: Long = default_value
+  def groupMemLimit: Long = default_value
+  def groupHdfsLimit: Long = default_value
+}
 
 /**
  * +---------------+--------------+------+-----+---------+----------------+

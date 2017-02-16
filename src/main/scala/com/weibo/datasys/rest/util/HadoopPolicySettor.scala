@@ -63,7 +63,7 @@ object HadoopPolicySettor {
 
       val value = users.map(_.name.trim).mkString(",") +
         " " +
-        groups.map(_.name.trim).mkString(",")
+        groups.map(_.groupName.trim).mkString(",")
 
       val nvmap2 = nvmap1.filterNot {
         case (k, v) =>
