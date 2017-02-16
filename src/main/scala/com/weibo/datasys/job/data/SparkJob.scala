@@ -61,7 +61,7 @@ case class SparkJob(
   def jobStatus: JobStatus.Value = JobStatus.apply(status.toInt)
 
   def summary: String = {
-    "job id : " + jobId + " -> " + toJson()
+    "job id : " + jobId + " -> " + s"name: $jobName status: $jobStatus"
   }
 
   /* Spark Job Properties */

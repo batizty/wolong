@@ -202,6 +202,8 @@ class JobManager
   def reScheduleJobs(): Unit = synchronized {
     getSatisfyJob(_jobMap.map(_._2).toList) {
       _ foreach { job =>
+        log.error("job status \n" + showJobMap)
+        log.error("submit job = " + job.summary)
         var currentJob = job.asInstanceOf[SparkJob]
         val task = currentJob.getTask()
         val launcher = _mesos_framework.submitTask(task)
