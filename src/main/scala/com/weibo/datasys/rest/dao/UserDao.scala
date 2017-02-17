@@ -1,7 +1,7 @@
 package com.weibo.datasys.rest.dao
 
 import com.weibo.datasys.rest.Configuration
-import com.weibo.datasys.rest.data.{DBUserTable, User, WebUser}
+import com.weibo.datasys.rest.data.{ DBUserTable, User, WebUser }
 import org.json4s._
 import org.json4s.native.JsonMethods.parse
 import org.slf4j.LoggerFactory
@@ -22,8 +22,8 @@ trait UserDao {
 }
 
 class DBUserDao
-  extends UserDao
-  with Configuration {
+    extends UserDao
+    with Configuration {
 
   val log = LoggerFactory.getLogger("DBUserDao")
   val users = TableQuery[DBUserTable]
@@ -48,8 +48,8 @@ class DBUserDao
 }
 
 class WebUserDao
-  extends UserDao
-  with Configuration {
+    extends UserDao
+    with Configuration {
   val log = LoggerFactory.getLogger(getClass.getName)
   implicit val formats = DefaultFormats
 

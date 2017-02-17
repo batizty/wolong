@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory
  */
 
 class ArgumentConf(args: Seq[String])
-  extends ScallopConf(args) {
+    extends ScallopConf(args) {
   val log = LoggerFactory.getLogger(getClass.getName)
   version("wolong version 0.0.1")
   banner("""Usage: wolong""")
@@ -33,39 +33,7 @@ class ArgumentConf(args: Seq[String])
 
   val scheduler_service = opt[Boolean](noshort = true)
 
-  /** sub commands example **/
-  //  val jobs =  new Subcommand("jobs") {
-  //    this.descr("jobs operations")
-  //
-  //    val list = opt[Boolean](
-  //      descr = "list all Jobs summary information",
-  //      required = false,
-  //      default = Some(false),
-  //      noshort = true
-  //    )
-  //
-  //    val show = opt[String](
-  //      descr = "show all Jobs detail",
-  //      required = false,
-  //      noshort = true
-  //    )
-  //
-  //    val kill = opt[String](
-  //      descr = "kill task of a Job",
-  //      required = false,
-  //      noshort = true
-  //    )
-  //
-  //    val delete = opt[String](
-  //      descr = "delete Job from Chronos",
-  //      required = false,
-  //      noshort = true
-  //    )
-  //  }
-  //
-  //  addSubcommand(jobs)
-
-  override def verify() = {
+  override def verify(): Unit = {
     super.verify()
     if (rest_service.isEmpty &&
       scheduler_service.isEmpty) {

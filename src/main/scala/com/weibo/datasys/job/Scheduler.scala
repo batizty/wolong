@@ -1,9 +1,9 @@
 package com.weibo.datasys.job
 
-import com.weibo.datasys.job.data.{JobStatus, Job}
+import com.weibo.datasys.job.data.{ JobStatus, Job }
 import com.weibo.datasys.rest.Configuration
 import com.weibo.datasys.rest.dao._
-import com.weibo.datasys.rest.data.{Group, Resource}
+import com.weibo.datasys.rest.data.{ Group, Resource }
 
 /**
  * Created by tuoyu on 09/02/2017.
@@ -13,8 +13,8 @@ trait Scheduler {
 }
 
 trait SimpleSchedulerFIFO
-  extends Scheduler
-  with Configuration {
+    extends Scheduler
+    with Configuration {
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -25,6 +25,7 @@ trait SimpleSchedulerFIFO
       (new WebUserDao(), new WebGroupDao())
     }
 
+  //      val umap = users.map { u => (u.userId, u) } toMap
   def getSatisfyJob(
     jobs: List[Job]
   )(f: Option[Job] => Unit)(fLimitByCore: Job => Unit)(fLimitByMem: Job => Unit): Unit = {
@@ -33,7 +34,7 @@ trait SimpleSchedulerFIFO
       groups <- groupDao.getAllGroup()
     } {
       val gmap = groups.map { g => (g.groupId, g) } toMap
-      val umap = users.map { u => (u.userId, u) } toMap
+      val umap = users.map { u => (u.name, u) } toMap
 
       val runingJobResources: Map[String, (Long, Long)] = jobs
         .filter(_.jobStatus == JobStatus.TaskRunning)

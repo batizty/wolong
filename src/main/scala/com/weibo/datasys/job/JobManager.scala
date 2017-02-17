@@ -1,21 +1,21 @@
 package com.weibo.datasys.job
 
-import akka.actor.{Actor, Props}
+import akka.actor.{ Actor, Props }
 import akka.util.Timeout
 import com.nokia.mesos.DriverFactory
 import com.nokia.mesos.api.stream.MesosEvents.TaskEvent
-import com.weibo.datasys.job.data.{Job, JobStatus, SparkJob}
+import com.weibo.datasys.job.data.{ Job, JobStatus, SparkJob }
 import com.weibo.datasys.job.mesos.WeiFrameworkFactory
-import com.weibo.datasys.rest.{AuthResult, Configuration}
+import com.weibo.datasys.rest.{ AuthResult, Configuration }
 import com.weibo.datasys.util.WebClient
-import com.weibo.datasys.{BaseActor, RestServiceActor}
+import com.weibo.datasys.{ BaseActor, RestServiceActor }
 import org.apache.mesos.mesos.FrameworkInfo
 import org.joda.time.DateTime
 import org.json4s.DefaultFormats
 import org.json4s.native.JsonMethods._
 
 import scala.concurrent.duration._
-import scala.util.{Failure, Success}
+import scala.util.{ Failure, Success }
 
 /**
  * JobManager 作用
@@ -48,9 +48,9 @@ object JobManager {
 }
 
 class JobManager
-  extends BaseActor
-  with SimpleSchedulerFIFO
-  with Configuration {
+    extends BaseActor
+    with SimpleSchedulerFIFO
+    with Configuration {
 
   // imports all messages(case class)
   import JobManager._
@@ -230,13 +230,14 @@ class JobManager
           log.info("Submit " + currentJob.summary + "to MesosFrameWork " + _mesos_framework_info.name)
           currentJob = currentJob.copy(
             mesos_task_id = Some(task.taskId.toString),
-            status = JobStatus.TaskRunning.id
+            status = JobStatus.TaskRunning.toString
           )
           self ! ChangeJobStatus(currentJob)
           launcher.events.subscribe(taskEvent => taskEvent match {
             case te: TaskEvent =>
               val jobStatus: JobStatus.Value = te.state
-              currentJob = currentJob.copy(status = jobStatus.id)
+              //              currentJob = currentJob.copy(status = jobStatus.id)
+              currentJob = currentJob.copy(status = jobStatus.toString)
               log.info("Job " + currentJob.jobId + " Status Change To " + currentJob.jobStatus)
               self ! ChangeJobStatus(currentJob)
           })
@@ -245,11 +246,11 @@ class JobManager
     } { job =>
       // LimitBy Core
       val spJob = job.asInstanceOf[SparkJob]
-      self ! ChangeJobStatus(spJob.copy(status = JobStatus.TaskLimitByCPU.id))
+      self ! ChangeJobStatus(spJob.copy(status = JobStatus.TaskLimitByCPU.toString))
     } { job =>
       // LimitBy Mem
       val spJob = job.asInstanceOf[SparkJob]
-      self ! ChangeJobStatus(spJob.copy(status = JobStatus.TaskLimitByMemory.id))
+      self ! ChangeJobStatus(spJob.copy(status = JobStatus.TaskLimitByMemory.toString))
 
     }
   }
