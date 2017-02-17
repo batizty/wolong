@@ -1,9 +1,9 @@
 package com.weibo.datasys.job
 
-import com.weibo.datasys.job.data.{JobStatus, Job}
+import com.weibo.datasys.job.data.{ JobStatus, Job }
 import com.weibo.datasys.rest.Configuration
 import com.weibo.datasys.rest.dao._
-import com.weibo.datasys.rest.data.{Group, Resource}
+import com.weibo.datasys.rest.data.{ Group, Resource }
 
 /**
  * Created by tuoyu on 09/02/2017.
@@ -13,8 +13,8 @@ trait Scheduler {
 }
 
 trait SimpleSchedulerFIFO
-  extends Scheduler
-  with Configuration {
+    extends Scheduler
+    with Configuration {
 
   import scala.concurrent.ExecutionContext.Implicits.global
 

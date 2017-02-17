@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory
  */
 
 class ArgumentConf(args: Seq[String])
-  extends ScallopConf(args) {
+    extends ScallopConf(args) {
   val log = LoggerFactory.getLogger(getClass.getName)
   version("wolong version 0.0.1")
   banner("""Usage: wolong""")
