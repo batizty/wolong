@@ -25,6 +25,7 @@ trait SimpleSchedulerFIFO
       (new WebUserDao(), new WebGroupDao())
     }
 
+  ///
   def getSatisfyJob(
     jobs: List[Job]
   )(f: Option[Job] => Unit)(fLimitByCore: Job => Unit)(fLimitByMem: Job => Unit): Unit = {
