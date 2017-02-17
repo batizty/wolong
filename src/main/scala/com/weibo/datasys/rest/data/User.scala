@@ -19,7 +19,7 @@ case class WebUser(
   auth: String,
   group_id: String
 )
-    extends User {
+  extends User {
   val VALID_CODE = 0
 
   override def isValid: Boolean = {

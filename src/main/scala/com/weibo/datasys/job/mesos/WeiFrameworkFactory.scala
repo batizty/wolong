@@ -1,7 +1,7 @@
 package com.weibo.datasys.job.mesos
 
 import com.nokia.mesos.FrameworkFactory
-import com.nokia.mesos.api.async.{ MesosDriver, MesosFramework, TaskLauncher }
+import com.nokia.mesos.api.async.{MesosDriver, MesosFramework, TaskLauncher}
 
 /**
  * Created by tuoyu on 09/02/2017.

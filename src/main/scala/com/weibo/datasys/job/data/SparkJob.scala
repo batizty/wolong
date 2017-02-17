@@ -5,7 +5,7 @@ import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import org.json4s.NoTypeHints
 import org.json4s.native.Serialization
-import org.apache.mesos.mesos.{ CommandInfo, Resource, Value }
+import org.apache.mesos.mesos.{CommandInfo, Resource, Value}
 
 /**
  * Created by tuoyu on 06/02/2017.
@@ -30,27 +30,27 @@ object SparkJob {
     "user": "tingting43"
  */
 case class SparkJob(
-    task_id: String,
-    name: String,
-    user: String,
-    add_time: String,
-    status: String,
-    user_class: String = "org.apache.spark.examples.SparkPi",
-    user_jars: String = "/tmp/spark-examples_2.11-2.0.2.jar",
-    driver_cores: Long = 1L,
-    driver_memory: Option[Long] = None,
-    executor_memory: Option[Long] = None,
-    total_executor_cores: Option[Long] = None,
-    confs: String = "",
-    arguments: Option[String] = Some("1000"),
-    mesos_task_id: Option[String] = None,
-    mesos_memory_usage: Option[Long] = None,
-    mesos_core_usage: Option[Long] = None,
-    core: Int = 0,
-    mem: Int = 0,
-    executor: Int = 0,
-    hdfs: Int = 0,
-    path: String
+  task_id: String,
+  name: String,
+  user: String,
+  add_time: String,
+  status: String,
+  user_class: String = "org.apache.spark.examples.SparkPi",
+  user_jars: String = "/tmp/spark-examples_2.11-2.0.2.jar",
+  driver_cores: Long = 1L,
+  driver_memory: Option[Long] = None,
+  executor_memory: Option[Long] = None,
+  total_executor_cores: Option[Long] = None,
+  confs: String = "",
+  arguments: Option[String] = Some("1000"),
+  mesos_task_id: Option[String] = None,
+  mesos_memory_usage: Option[Long] = None,
+  mesos_core_usage: Option[Long] = None,
+  core: Int = 0,
+  mem: Int = 0,
+  executor: Int = 0,
+  hdfs: Int = 0,
+  path: String
 ) extends Job {
 
   import SparkJob._

@@ -1,6 +1,6 @@
 package com.weibo.datasys
 
-import akka.actor.{ ActorContext, Props }
+import akka.actor.{ActorContext, Props}
 import com.weibo.datasys.job.JobManager
 
 /**
@@ -16,7 +16,7 @@ object JobSchedulerActor {
 }
 
 class JobSchedulerActor
-    extends BaseActor {
+  extends BaseActor {
 
   val jobManager = actorRefFactory.actorOf(JobManager.props(), JobManager.Name)
 
