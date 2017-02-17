@@ -33,7 +33,7 @@ trait SimpleSchedulerFIFO
       groups <- groupDao.getAllGroup()
     } {
       val gmap = groups.map { g => (g.groupId, g) } toMap
-      val umap = users.map { u => (u.userId, u) } toMap
+      val umap = users.map { u => (u.name, u) } toMap // TODO 这里用username代替userid
 
       val runingJobResources: Map[String, (Long, Long)] = jobs
         .filter(_.jobStatus == JobStatus.TaskRunning)

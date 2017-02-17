@@ -230,13 +230,13 @@ class JobManager
           log.info("Submit " + currentJob.summary + "to MesosFrameWork " + _mesos_framework_info.name)
           currentJob = currentJob.copy(
             mesos_task_id = Some(task.taskId.toString),
-            status = JobStatus.TaskRunning.id
+            status = JobStatus.TaskRunning.toString
           )
           self ! ChangeJobStatus(currentJob)
           launcher.events.subscribe(taskEvent => taskEvent match {
             case te: TaskEvent =>
               val jobStatus: JobStatus.Value = te.state
-              currentJob = currentJob.copy(status = jobStatus.id)
+              currentJob = currentJob.copy(status = jobStatus.toString)
               log.info("Job " + currentJob.jobId + " Status Change To " + currentJob.jobStatus)
               self ! ChangeJobStatus(currentJob)
           })
@@ -245,11 +245,11 @@ class JobManager
     } { job =>
       // LimitBy Core
       val spJob = job.asInstanceOf[SparkJob]
-      self ! ChangeJobStatus(spJob.copy(status = JobStatus.TaskLimitByCPU.id))
+      self ! ChangeJobStatus(spJob.copy(status = JobStatus.TaskLimitByCPU.toString))
     } { job =>
       // LimitBy Mem
       val spJob = job.asInstanceOf[SparkJob]
-      self ! ChangeJobStatus(spJob.copy(status = JobStatus.TaskLimitByMemory.id))
+      self ! ChangeJobStatus(spJob.copy(status = JobStatus.TaskLimitByMemory.toString))
 
     }
   }

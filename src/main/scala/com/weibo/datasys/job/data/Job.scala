@@ -93,4 +93,25 @@ object JobStatus extends Enumeration {
       case TASK_ERROR => TaskError
     }
   }
+
+  def apply2(stat: String): JobStatus.Value = {
+    stat match {
+      case "TaskQueue" => TaskQueue
+      case "TaskStaging" => TaskStaging
+      case "TaskStarting" => TaskStarting
+      case "TaskRunning" => TaskRunning
+      case "TaskKilling" => TaskKilling
+      case "TaskFinished" => TaskFinished
+      case "TaskFailed" => TaskFailed
+      case "TaskKilled" => TaskKilled
+      case "TaskLost" => TaskLost
+      case "TaskError" => TaskError
+      case "TaskNotSupport" => TaskNotSupport
+      case "TaskLimitByCPU" => TaskLimitByCPU
+      case "TaskLimitByMemory" => TaskLimitByMemory
+      case "TaskLimitByDisk" => TaskLimitByDisk
+      case "TaskDownGrade" => TaskDownGrade
+      case _ => TaskNotSupport
+    }
+  }
 }

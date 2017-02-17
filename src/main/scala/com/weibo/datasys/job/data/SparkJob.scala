@@ -20,9 +20,9 @@ object SparkJob {
 case class SparkJob(
     id: String,
     name: String,
-    user_id: String,
+    user: String,
     add_time: String,
-    status: Int = 0,
+    status: String,
     user_class: String,
     user_jars: String,
     driver_cores: Long = 1L,
@@ -54,24 +54,24 @@ case class SparkJob(
 
   def jobName: String = name
 
-  def jobUserId: String = user_id
+  def jobUserId: String = user
 
   def jobAddTime: DateTime = DateTime.parse(add_time, datetime_fmt)
 
-  def jobStatus: JobStatus.Value = JobStatus.apply(status.toInt)
+  def jobStatus: JobStatus.Value = JobStatus.apply2(status)
 
   def summary: String = {
     "job id : " + jobId + " -> " + s"name: $jobName status: $jobStatus"
   }
 
   /* Spark Job Properties */
-  def driverCore(): Long = driver_cores
+  def driverCore(): Long = math.min(1L, driver_cores)
 
-  def driverMemory(): Long = driver_memory.getOrElse(1)
+  def driverMemory(): Long = driver_memory.map(math.min(1L, _)).getOrElse(1L)
 
-  def executorMemory(): Long = executor_memory.getOrElse(1)
+  def executorMemory(): Long = executor_memory.map(math.min(1L, _)).getOrElse(1L)
 
-  def totalExecutorCores(): Long = total_executor_cores.getOrElse(2)
+  def totalExecutorCores(): Long = total_executor_cores.map(math.min(2L, _)).getOrElse(2)
 
   def toJson(): String = Serialization.write(this)
 
