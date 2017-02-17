@@ -7,9 +7,9 @@ import slick.jdbc.MySQLProfile.api._
  */
 
 case class DBGroup(
-  id: Long,
-  groupName: String,
-  creator: String
+    id: Long,
+    groupName: String,
+    creator: String
 ) extends Group {
   val default_value: Long = 10L
   def groupId: String = id.toString

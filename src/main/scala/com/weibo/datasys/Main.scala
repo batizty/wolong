@@ -1,6 +1,6 @@
 package com.weibo.datasys
 
-import akka.actor.{ActorSystem, Props, _}
+import akka.actor.{ ActorSystem, Props, _ }
 import akka.io.IO
 import akka.util.Timeout
 import com.weibo.datasys.rest.Configuration
@@ -11,7 +11,7 @@ import scala.concurrent.duration._
  * Created by tuoyu on 25/01/2017.
  */
 object Main
-  extends Configuration {
+    extends Configuration {
 
   def main(args: Array[String]): Unit = {
     lazy val cmd = new ArgumentConf(args)

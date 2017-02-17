@@ -3,7 +3,7 @@ package com.weibo.datasys.job.mesos
 import com.nokia.mesos.api.async.Scheduling
 import com.nokia.mesos.api.async.TaskLauncher._
 import com.nokia.mesos.impl.launcher.WeiTaskAllocator
-import org.apache.mesos.mesos.{Offer, OfferID}
+import org.apache.mesos.mesos.{ Offer, OfferID }
 
 import scala.collection.concurrent
 import scala.concurrent.Future
